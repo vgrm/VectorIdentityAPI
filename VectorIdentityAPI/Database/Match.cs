@@ -8,9 +8,12 @@ namespace VectorIdentityAPI.Database
     public class Match
     {
         public int Id { get; set; }
-        public int Pointer { get; set; }
-        public double Value { get; set; }
 
+        public Line LineA { get; set; }
+        public Line LineB { get; set; }
+
+        public Arc ArcA { get; set; }
+        public Arc ArcB { get; set; }
 
 
     }
