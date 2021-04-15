@@ -16,7 +16,7 @@ namespace VectorIdentityAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.3")
+                .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("VectorIdentityAPI.Database.Arc", b =>
@@ -31,6 +31,18 @@ namespace VectorIdentityAPI.Migrations
 
                     b.Property<double>("AngleStart")
                         .HasColumnType("float");
+
+                    b.Property<double>("DX")
+                        .HasColumnType("float");
+
+                    b.Property<double>("DY")
+                        .HasColumnType("float");
+
+                    b.Property<double>("DZ")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Handle")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ProjectDataId")
                         .HasColumnType("int");
@@ -86,8 +98,17 @@ namespace VectorIdentityAPI.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<double>("Direction")
+                    b.Property<double>("DX")
                         .HasColumnType("float");
+
+                    b.Property<double>("DY")
+                        .HasColumnType("float");
+
+                    b.Property<double>("DZ")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Handle")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Magnitude")
                         .HasColumnType("float");
@@ -167,8 +188,20 @@ namespace VectorIdentityAPI.Migrations
                     b.Property<double>("CorrectnessScore")
                         .HasColumnType("float");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUploaded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("FileData")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("FileType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("IdentityScore")
                         .HasColumnType("float");
