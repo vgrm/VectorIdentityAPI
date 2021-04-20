@@ -92,6 +92,20 @@ namespace VectorIdentityAPI.Services
                 //Line
                 if (D[i] == "LINE")
                 {
+                    double X1 = 0;
+                    double Y1 = 0;
+                    double Z1 = 0;
+
+                    double X2 = 0;
+                    double Y2 = 0;
+                    double Z2 = 0;
+
+                    double Magnitude = 0;
+
+                    double DX = 0;
+                    double DY = 0;
+                    double DZ = 0;
+
                     //find entity index
                     int iLine = i;
                     int iEntity = i;
@@ -123,37 +137,44 @@ namespace VectorIdentityAPI.Services
                         }
                     }
 
-                    for (int iWaarden = iLine; iWaarden < iLine + 10; iWaarden++)
+                    for (int ii = iLine; ii < iLine + 10; ii++)
                     {
-                        if (D[iWaarden] == " 10" && D[iWaarden + 2] == " 20")
+                        if (D[ii] == " 10" && D[ii + 2] == " 20")
                         {
-                            //Here you can store the following data in a list for later use
-                            //LayerName = Layer
-                            //Xbegin = D[iWaarden + 1]
-                            //Ybegin = D[iWaarden + 3]
-                            //Zbegin = D[iWaarden + 5]
-                            //Xend = D[iWaarden + 7]
-                            //Yend = D[iWaarden + 9]
-                            //Zend = D[iWaarden + 11]
+                            var number = 10000000000000;
+                            //raw as accurate as we can get from dxf
+                            double tempX1 = Convert.ToDouble(D[ii + 1]);
+                            double tempY1 = Convert.ToDouble(D[ii + 3]);
+                            double tempZ1 = Convert.ToDouble(D[ii + 5]);
+                            double tempX2 = Convert.ToDouble(D[ii + 7]);
+                            double tempY2 = Convert.ToDouble(D[ii + 9]);
+                            double tempZ2 = Convert.ToDouble(D[ii + 11]);
 
-                            double X1 = Convert.ToDouble(D[iWaarden + 1].PadRight(17, '0').Substring(0, D[iWaarden + 1].Length - 1));
-                            double Y1 = Convert.ToDouble(D[iWaarden + 3].PadRight(17, '0').Substring(0, D[iWaarden + 1].Length - 1));
-                            double Z1 = Convert.ToDouble(D[iWaarden + 5].PadRight(17, '0').Substring(0, D[iWaarden + 1].Length - 1));
-                            double X2 = Convert.ToDouble(D[iWaarden + 7].PadRight(17, '0').Substring(0, D[iWaarden + 1].Length - 1));
-                            double Y2 = Convert.ToDouble(D[iWaarden + 9].PadRight(17, '0').Substring(0, D[iWaarden + 1].Length - 1));
-                            double Z2 = Convert.ToDouble(D[iWaarden + 11].PadRight(17, '0').Substring(0, D[iWaarden + 1].Length - 1));
+                            //lower accuracy to minimize all the floating points
+                            //X1 = Convert.ToDouble(D[ii + 1].PadRight(17, '0').Substring(0, D[ii + 1].Length - 2));
+                            //Y1 = Convert.ToDouble(D[ii + 3].PadRight(17, '0').Substring(0, D[ii + 3].Length - 2));
+                            //Z1 = Convert.ToDouble(D[ii + 5].PadRight(17, '0').Substring(0, D[ii + 5].Length - 2));
+                            //X2 = Convert.ToDouble(D[ii + 7].PadRight(17, '0').Substring(0, D[ii + 7].Length - 2));
+                            //Y2 = Convert.ToDouble(D[ii + 9].PadRight(17, '0').Substring(0, D[ii + 9].Length - 2));
+                            //Z2 = Convert.ToDouble(D[ii + 11].PadRight(17, '0').Substring(0, D[ii + 11].Length - 2));
+                            X1 = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(tempX1 * number) / number));
+                            Y1 = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(tempY1 * number) / number));
+                            Z1 = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(tempZ1 * number) / number));
+                            X2 = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(tempX2 * number) / number));
+                            Y2 = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(tempY2 * number) / number));
+                            Z2 = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(tempZ2 * number) / number));
 
-                            double V1 = X1 - X2;
-                            double V2 = Y1 - Y2;
-                            double V3 = Z1 - Z2;
+                            double V1 = tempX1 - tempX2;
+                            double V2 = tempY1 - tempY2;
+                            double V3 = tempZ1 - tempZ2;
 
-                            double Magnitude = Math.Sqrt(Math.Pow(V1, 2) + Math.Pow(V2, 2) + Math.Pow(V3, 2));
-                            double DX = V1 / Magnitude;
-                            double DY = V2 / Magnitude;
-                            double DZ = V3 / Magnitude;
+                            Magnitude = Math.Sqrt(Math.Pow(V1, 2) + Math.Pow(V2, 2) + Math.Pow(V3, 2));
+                            DX = V1 / Magnitude;
+                            DY = V2 / Magnitude;
+                            DZ = V3 / Magnitude;
 
                             //string.format(new FormatProvider(), "{0:T(1)0,000.0", 1000.9999); // 1,000.9
-                            var number = 10000000000000;
+
                             DX = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(DX * number) / number));
                             DY = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(DY * number) / number));
                             DZ = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(DZ * number) / number));
@@ -247,24 +268,34 @@ namespace VectorIdentityAPI.Services
                             Handle = D[iHandle + 1];
                         }
                     }
-
+                    var number = 10000000000000;
                     for (int ii = iCircle; ii < iCircle + 10; ii++)
                     {
                         if (D[ii] == " 10" && D[ii + 2] == " 20" && D[ii + 4] == " 30" && D[ii + 6] == " 40")
                         {
+                            
+                            X = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate((Convert.ToDouble(D[ii + 1]) * number)) / number));
+                            Y = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate((Convert.ToDouble(D[ii + 3]) * number)) / number));
+                            Z = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate((Convert.ToDouble(D[ii + 5]) * number)) / number));
+                            Radius = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate((Convert.ToDouble(D[ii + 7]) * number)) / number));
 
-                            X = Convert.ToDouble(D[ii + 1]);
-                            Y = Convert.ToDouble(D[ii + 3]);
-                            Z = Convert.ToDouble(D[ii + 5]);
-                            Radius = Convert.ToDouble(D[ii + 7]);
+                            //X = Convert.ToDouble(D[ii + 1]);
+                            //Y = Convert.ToDouble(D[ii + 3]);
+                            //Z = Convert.ToDouble(D[ii + 5]);
+                            //Radius = Convert.ToDouble(D[ii + 7]);
                         }
 
                         if (D[ii + 8] == "210" && D[ii + 10] == "220" && D[ii + 12] == "230")
                         {
-                            DX = Convert.ToDouble(D[ii + 9]);
-                            DY = Convert.ToDouble(D[ii + 10]);
-                            DZ = Convert.ToDouble(D[ii + 11]);
-                            Radius = Convert.ToDouble(D[ii + 7]);
+
+                            DX = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate((Convert.ToDouble(D[ii + 9]) * number)) / number));
+                            DY = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate((Convert.ToDouble(D[ii + 11]) * number)) / number));
+                            DZ = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate((Convert.ToDouble(D[ii + 13]) * number)) / number));
+                            Radius = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate((Convert.ToDouble(D[ii + 7]) * number)) / number));
+                            //DX = Convert.ToDouble(D[ii + 9]);
+                            //DY = Convert.ToDouble(D[ii + 10]);
+                            //DZ = Convert.ToDouble(D[ii + 11]);
+                            //Radius = Convert.ToDouble(D[ii + 7]);
                         }
                     }
 
@@ -315,29 +346,454 @@ namespace VectorIdentityAPI.Services
 
         private async Task MinimizeData(List<Line> lines, List<Arc> arcs)
         {
+            bool minimizedLines = false;
+            bool minimizedArcs = false;
 
-            foreach (var line in lines)
+            while (!minimizedLines)
             {
-                foreach (var lineTest in lines)
-                {
-                    if (((line.DX == lineTest.DX && line.DY == lineTest.DY && line.DZ == lineTest.DZ) ||
-                        (line.DX == -lineTest.DX && line.DY == -lineTest.DY && line.DZ == -lineTest.DZ)) &&
-                        (line.Handle != lineTest.Handle))
-                    {
-                        _logger.LogInformation("{handleA} A\"{x1a} {y1a} {z1a}\" \"{x2a} {y2a} {z2a}\" \n {handleB} B\"{x1b} {y1b} {z1b}\" \"{x2b} {y2b} {z2b}\""
-                            , line.Handle, line.X1, line.Y1, line.Z1, line.X2, line.Y2, line.Z2
-                            , lineTest.Handle, lineTest.X1, lineTest.Y1, lineTest.Z1, lineTest.X2, lineTest.Y2, lineTest.Z2);
-
-                        _logger.LogInformation("A\"{x1a} {y1a} {z1a}\"  \n B\"{x1b} {y1b} {z1b}\""
-                            , line.DX, line.DY, line.DZ
-                            , lineTest.DX, lineTest.DY, lineTest.DZ);
-                    }
-                }
+                int linesCount = lines.Count();
+                lines = MinimizeLines(lines);
+                int linesCount2 = lines.Count();
+                if (linesCount == linesCount2) minimizedLines = true;
             }
+
+            while (!minimizedArcs)
+            {
+                int arcsCount = arcs.Count();
+                arcs = MinimizeArcs(arcs);
+                int arcsCount2 = arcs.Count();
+                if (arcsCount == arcsCount2) minimizedArcs = true;
+            }
+
             //UPDATE DB
             _databaseContext.Line.AddRange(lines);
             _databaseContext.Arc.AddRange(arcs);
             await _databaseContext.SaveChangesAsync();
         }
+
+        private List<Line> MinimizeLines(List<Line> lines)
+        {
+            Line line1 = new Line();
+            Line line2 = new Line();
+            Line newLine = new Line();
+            var number = 10000000000000;
+            bool wasMatch = false;
+
+            foreach (var line in lines)
+            {
+
+                foreach (var lineTest in lines)
+                {
+                    //find lines with same or opposite direction
+                    if (((line.DX == lineTest.DX && line.DY == lineTest.DY && line.DZ == lineTest.DZ) ||
+                        (line.DX == -lineTest.DX && line.DY == -lineTest.DY && line.DZ == -lineTest.DZ)) &&
+                        (line.Handle != lineTest.Handle))
+                    {
+
+                        //set line boundaries
+                        double minX = 0;
+                        double maxX = 0;
+                        double minY = 0;
+                        double maxY = 0;
+                        double minZ = 0;
+                        double maxZ = 0;
+
+                        if (lineTest.X1 >= lineTest.X2) { minX = lineTest.X2; maxX = lineTest.X1; }
+                        else { minX = lineTest.X1; maxX = lineTest.X2; }
+                        if (lineTest.Y1 >= lineTest.Y2) { minY = lineTest.Y2; maxY = lineTest.Y1; }
+                        else { minY = lineTest.Y1; maxY = lineTest.Y2; }
+                        if (lineTest.Z1 >= lineTest.Z2) { minZ = lineTest.Z2; maxZ = lineTest.Z1; }
+                        else { minZ = lineTest.Z1; maxZ = lineTest.Z2; }
+
+                        //check if point is in set boundaries
+                        if (line.X1 >= minX && line.X1 <= maxX &&
+                            line.Y1 >= minY && line.Y1 <= maxY &&
+                            line.Z1 >= minZ && line.Z1 <= maxZ)
+                        {
+                            wasMatch = true;
+
+                            double newX2 = line.X2;
+                            if (newX2 < maxX) newX2 = maxX;
+
+                            double newY2 = line.Y2;
+                            if (newY2 < maxY) newY2 = maxY;
+
+                            double newZ2 = line.Z2;
+                            if (newZ2 < maxZ) newZ2 = maxZ;
+
+                            double V1 = minX - newX2;
+                            double V2 = minY - newY2;
+                            double V3 = minZ - newZ2;
+
+                            double Magnitude = Math.Sqrt(Math.Pow(V1, 2) + Math.Pow(V2, 2) + Math.Pow(V3, 2));
+                            double DX = V1 / Magnitude;
+                            double DY = V2 / Magnitude;
+                            double DZ = V3 / Magnitude;
+
+                            DX = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(DX * number) / number));
+                            DY = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(DY * number) / number));
+                            DZ = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(DZ * number) / number));
+
+                            //create new vector
+                            //min x2
+                            Line newLineTemp = new Line
+                            {
+                                ProjectId = line.ProjectId,
+                                Handle = line.Handle,
+                                Layer = line.Layer,
+                                X1 = minX,
+                                Y1 = minY,
+                                Z1 = minZ,
+                                X2 = newX2,
+                                Y2 = newY2,
+                                Z2 = newZ2,
+                                /*
+                                Magnitude = line.Magnitude + lineTest.Magnitude,
+                                DX = line.DX,
+                                DY = line.DY,
+                                DZ = line.DZ
+                                */
+                                Magnitude = Magnitude,
+                                DX = DX,
+                                DY = DY,
+                                DZ = DZ
+
+                            };
+
+                            newLine = newLineTemp;
+                            line1 = line;
+                            line2 = lineTest;
+                            break;
+                        }
+
+                        //check if point is in set boundaries
+                        else if (line.X2 >= minX && line.X2 <= maxX &&
+                                 line.Y2 >= minY && line.Y2 <= maxY &&
+                                 line.Z2 >= minZ && line.Z2 <= maxZ)
+                        {
+                            wasMatch = true;
+
+                            double newX1 = line.X1;
+                            if (newX1 > minX) newX1 = minX;
+
+                            double newY1 = line.Y1;
+                            if (newY1 > minY) newY1 = minY;
+
+                            double newZ1 = line.Z1;
+                            if (newZ1 > minZ) newZ1 = minZ;
+
+                            double V1 = newX1 - maxX;
+                            double V2 = newY1 - maxY;
+                            double V3 = newZ1 - maxZ;
+
+                            double Magnitude = Math.Sqrt(Math.Pow(V1, 2) + Math.Pow(V2, 2) + Math.Pow(V3, 2));
+                            double DX = V1 / Magnitude;
+                            double DY = V2 / Magnitude;
+                            double DZ = V3 / Magnitude;
+
+                            DX = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(DX * number) / number));
+                            DY = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(DY * number) / number));
+                            DZ = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate(DZ * number) / number));
+
+                            //create new vector
+                            //x1 max
+                            Line newLineTemp = new Line
+                            {
+                                ProjectId = line.ProjectId,
+                                Handle = line.Handle,
+                                Layer = line.Layer,
+                                X1 = newX1,
+                                Y1 = newY1,
+                                Z1 = newZ1,
+                                X2 = maxX,
+                                Y2 = maxY,
+                                Z2 = maxZ,
+                                /*
+                                Magnitude = line.Magnitude + lineTest.Magnitude,
+                                DX = line.DX,
+                                DY = line.DY,
+                                DZ = line.DZ
+                                */
+                                Magnitude = Magnitude,
+                                DX = DX,
+                                DY = DY,
+                                DZ = DZ
+                            };
+                            newLine = newLineTemp;
+                            line1 = line;
+                            line2 = lineTest;
+                            break;
+                        }
+                        else
+                        {
+                            //same direction but not same coords
+                            _logger.LogInformation("VECTORS ARE NOT THE SAME");
+                        }
+                    }
+                }
+                if (wasMatch) break;
+            }
+            if (wasMatch)
+            {
+                lines.Add(newLine);
+                lines.Remove(line1);
+                lines.Remove(line2);
+            }
+            return lines;
+        }
+
+        private List<Arc> MinimizeArcs(List<Arc> arcs)
+        {
+            Arc arc1 = new Arc();
+            Arc arc2 = new Arc();
+            Arc newArc = new Arc();
+
+            bool wasMatch = false;
+
+            foreach (var arc in arcs)
+            {
+                foreach (var arcTest in arcs)
+                {
+                    //find arcs with same R coords and plane
+                    if (arc.X == arcTest.X && arc.Y == arcTest.Y && arc.Z == arcTest.Z &&
+                        arc.Radius == arcTest.Radius &&
+                        arc.DX == arcTest.DX && arc.DY == arcTest.DY && arc.DZ == arcTest.DZ
+                        && arc.Handle!=arcTest.Handle)
+                    {
+
+                        double angleStart = 0;
+                        double angleEnd = 0;
+
+                        //if CW
+                        if (arc.AngleStart < arc.AngleEnd)
+                        {
+                            //if CW
+                            if (arcTest.AngleStart < arcTest.AngleEnd)
+                            {
+                                if ((arc.AngleStart < arcTest.AngleStart && arc.AngleEnd > arcTest.AngleStart) ||
+                                        (arc.AngleStart < arcTest.AngleEnd && arc.AngleEnd > arcTest.AngleEnd))
+                                {
+                                    //find smallest and biggest angles for ends
+                                    if (arc.AngleStart < arcTest.AngleStart) angleStart = arc.AngleStart;
+                                    else angleStart = arcTest.AngleStart;
+                                    if (arc.AngleEnd > arcTest.AngleEnd) angleEnd = arc.AngleEnd;
+                                    else angleEnd = arcTest.AngleEnd;
+
+                                    wasMatch = true;
+
+                                    Arc newArcTemmp = new Arc
+                                    {
+                                        ProjectId = arc.ProjectId,
+                                        Handle = arc.Handle,
+                                        Layer = arc.Layer,
+                                        X = arc.X,
+                                        Y = arc.Y,
+                                        Z = arc.Z,
+
+                                        Radius = arc.Radius,
+                                        AngleStart = angleStart,
+                                        AngleEnd = angleEnd,
+
+                                        DX = arc.DX,
+                                        DY = arc.DY,
+                                        DZ = arc.DZ
+                                    };
+
+                                    newArc = newArcTemmp;
+                                    arc1 = arc;
+                                    arc2 = arcTest;
+                                    break;
+                                }
+                            }
+                            //if CCW
+                            else if (arcTest.AngleStart > arcTest.AngleEnd)
+                            {
+
+                                if ((arc.AngleStart < arcTest.AngleStart && arc.AngleEnd > arcTest.AngleStart) ||
+                                        (arc.AngleStart < arcTest.AngleEnd && arc.AngleEnd > arcTest.AngleEnd))
+                                {
+                                    //THIS DOES NOT WORK
+                                    //find smallest and biggest angles for ends
+                                    if (arc.AngleStart >= arcTest.AngleStart) angleStart = arc.AngleStart;
+                                    else angleStart = arcTest.AngleStart;
+                                    if (arc.AngleEnd >= arcTest.AngleEnd) angleEnd = arc.AngleEnd;
+                                    else angleEnd = arcTest.AngleEnd;
+
+                                    //its a circle now
+                                    if (arc.AngleStart <= arcTest.AngleEnd && arc.AngleEnd >= arcTest.AngleStart)
+                                    {
+                                        angleStart = 0;
+                                        angleEnd = 0;
+                                    }
+                                    wasMatch = true;
+                                    Arc newArcTemmp = new Arc
+                                    {
+                                        ProjectId = arc.ProjectId,
+                                        Handle = arc.Handle,
+                                        Layer = arc.Layer,
+                                        X = arc.X,
+                                        Y = arc.Y,
+                                        Z = arc.Z,
+
+                                        Radius = arc.Radius,
+                                        AngleStart = angleStart,
+                                        AngleEnd = angleEnd,
+
+                                        DX = arc.DX,
+                                        DY = arc.DY,
+                                        DZ = arc.DZ
+                                    };
+
+                                    newArc = newArcTemmp;
+                                    arc1 = arc;
+                                    arc2 = arcTest;
+                                    break;
+                                }
+                            }
+                        }
+                        //if CCW
+                        else if (arc.AngleStart < arc.AngleEnd)
+                        {
+                            //if CW
+                            if (arcTest.AngleStart < arcTest.AngleEnd)
+                            {
+                                if (arc.AngleStart <= arcTest.AngleEnd)
+                                {
+                                    //circle
+                                    if (arc.AngleEnd >= arcTest.AngleStart)
+                                    {
+                                        angleStart = 0;
+                                        angleEnd = 0;
+                                    }
+                                    //else arc
+                                    else
+                                    {
+                                        angleStart = arcTest.AngleStart;
+                                        angleEnd = arc.AngleEnd;
+                                    }
+                                    wasMatch = true;
+                                    Arc newArcTemmp = new Arc
+                                    {
+                                        ProjectId = arc.ProjectId,
+                                        Handle = arc.Handle,
+                                        Layer = arc.Layer,
+                                        X = arc.X,
+                                        Y = arc.Y,
+                                        Z = arc.Z,
+
+                                        Radius = arc.Radius,
+                                        AngleStart = angleStart,
+                                        AngleEnd = angleEnd,
+
+                                        DX = arc.DX,
+                                        DY = arc.DY,
+                                        DZ = arc.DZ
+                                    };
+
+                                    newArc = newArcTemmp;
+                                    arc1 = arc;
+                                    arc2 = arcTest;
+                                    break;
+                                }
+
+                                if (arc.AngleEnd >= arcTest.AngleStart)
+                                {
+                                    //circle
+                                    if (arcTest.AngleEnd >= arc.AngleStart)
+                                    {
+                                        angleStart = 0;
+                                        angleEnd = 0;
+                                    }
+                                    //else arc
+                                    else
+                                    {
+                                        angleStart = arc.AngleStart;
+                                        angleEnd = arcTest.AngleEnd;
+                                    }
+                                    wasMatch = true;
+                                    Arc newArcTemmp = new Arc
+                                    {
+                                        ProjectId = arc.ProjectId,
+                                        Handle = arc.Handle,
+                                        Layer = arc.Layer,
+                                        X = arc.X,
+                                        Y = arc.Y,
+                                        Z = arc.Z,
+
+                                        Radius = arc.Radius,
+                                        AngleStart = angleStart,
+                                        AngleEnd = angleEnd,
+
+                                        DX = arc.DX,
+                                        DY = arc.DY,
+                                        DZ = arc.DZ
+                                    };
+
+                                    newArc = newArcTemmp;
+                                    arc1 = arc;
+                                    arc2 = arcTest;
+                                    break;
+                                }
+
+                            }
+
+                            //if CCW
+                            else if (arcTest.AngleStart > arcTest.AngleEnd)
+                            {
+                                if ((arc.AngleStart >= arcTest.AngleStart && arc.AngleEnd >= arcTest.AngleEnd) ||
+                                    (arc.AngleStart <= arcTest.AngleStart && arc.AngleEnd <= arcTest.AngleEnd))
+                                {
+                                    if (arc.AngleStart < arcTest.AngleStart) angleStart = arc.AngleStart;
+                                    else angleStart = arcTest.AngleStart;
+                                    if (arc.AngleEnd > arcTest.AngleEnd) angleEnd = arc.AngleEnd;
+                                    else angleEnd = arcTest.AngleEnd;
+
+                                    if ((arc.AngleStart >= arcTest.AngleStart && arc.AngleStart >= arcTest.AngleEnd
+                                        && arc.AngleEnd >= arcTest.AngleStart && arc.AngleEnd >= arcTest.AngleEnd) ||
+                                        (arc.AngleStart <= arcTest.AngleStart && arc.AngleStart <= arcTest.AngleEnd
+                                        && arc.AngleEnd <= arcTest.AngleStart && arc.AngleEnd <= arcTest.AngleEnd))
+                                    {
+                                        angleStart = 0;
+                                        angleEnd = 0;
+                                    }
+                                    wasMatch = true;
+                                    Arc newArcTemmp = new Arc
+                                    {
+                                        ProjectId = arc.ProjectId,
+                                        Handle = arc.Handle,
+                                        Layer = arc.Layer,
+                                        X = arc.X,
+                                        Y = arc.Y,
+                                        Z = arc.Z,
+
+                                        Radius = arc.Radius,
+                                        AngleStart = angleStart,
+                                        AngleEnd = angleEnd,
+
+                                        DX = arc.DX,
+                                        DY = arc.DY,
+                                        DZ = arc.DZ
+                                    };
+
+                                    newArc = newArcTemmp;
+                                    arc1 = arc;
+                                    arc2 = arcTest;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (wasMatch) break;
+            }
+            if (wasMatch)
+            {
+                arcs.Add(newArc);
+                arcs.Remove(arc1);
+                arcs.Remove(arc2);
+            }
+            return arcs;
+        }
     }
 }
+

@@ -77,6 +77,7 @@ namespace VectorIdentityAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<ProjectSet>> PostProjectSet(ProjectSet projectSet)
         {
+            projectSet.OwnerId = 3;
             _context.ProjectSet.Add(projectSet);
             await _context.SaveChangesAsync();
 
