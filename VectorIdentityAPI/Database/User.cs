@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,12 +8,16 @@ namespace VectorIdentityAPI.Database
 {
     public class User
     {
-        public int Id { get; set; }
+        [JsonIgnore] public int Id { get; set; }
+
         public string Username { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public string Role { get; set; }
-        public string Password { get; set; }
+        [JsonIgnore] public string PasswordHash { get; set; }
+        [JsonIgnore] public string PasswordSalt { get; set; }
+
+        [JsonIgnore] public ICollection<ProjectData> Projects { get; set; }
+        [JsonIgnore] public ICollection<ProjectSet> ProjectSets { get; set; }
     }
 }

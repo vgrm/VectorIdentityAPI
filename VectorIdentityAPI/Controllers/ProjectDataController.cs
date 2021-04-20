@@ -7,7 +7,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VectorIdentityAPI.Database;
-using VectorIdentityAPI.Models;
+using VectorIdentityAPI.Models.ProjectData;
+using VectorIdentityAPI.Services;
+
+
+using System.Net;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace VectorIdentityAPI.Controllers
 {
@@ -16,16 +22,22 @@ namespace VectorIdentityAPI.Controllers
     public class ProjectDataController : ControllerBase
     {
         private readonly DatabaseContext _context;
+        //private readonly IAnalyzeService _analyzeService;
+        private readonly IBackgroundQueue<ProjectData> _queue;
 
-        public ProjectDataController(DatabaseContext context)
+        public ProjectDataController(DatabaseContext context, IBackgroundQueue<ProjectData> queue)
         {
             _context = context;
+            _queue = queue;
         }
 
         // GET: api/ProjectData
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectData>>> GetProjectData()
         {
+            //var projects = _context.ProjectData.Include(p => p.Lines).ToList();
+
+            //return Ok(projects);
             return await _context.ProjectData.ToListAsync();
         }
 
@@ -33,6 +45,34 @@ namespace VectorIdentityAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ProjectData>> GetProjectData(int id)
         {
+            var project = await _context.ProjectData.Include(p => p.Lines).FirstOrDefaultAsync(p => p.Id == id);
+
+            var customProject = new ProjectDataResponseModel
+            {
+                Id = project.Id,
+
+                Name = project.Name,
+                FileType = project.FileType,
+                FileData = project.FileData,
+                DateCreated = project.DateCreated,
+
+                Status = project.Status,
+                Original = project.Original,
+                ScoreIdentity = project.ScoreIdentity,
+                ScoreCorrectness = project.ScoreCorrectness,
+
+                DateUploaded = project.DateUploaded,
+                DateUpdated = project.DateUpdated,
+
+                OwnerId = project.OwnerId,
+                ProjectSetId = project.ProjectSetId,
+
+                //Lines = project.Lines,
+                //Arcs = null
+            };
+            //var project = await _context.ProjectData.FirstOrDefaultAsync(p => p.Id == id);
+
+            /*
             var projectData = await _context.ProjectData.FindAsync(id);
 
             if (projectData == null)
@@ -41,6 +81,9 @@ namespace VectorIdentityAPI.Controllers
             }
 
             return projectData;
+            */
+
+            return Ok(customProject);
         }
 
         // PUT: api/ProjectData/5
@@ -48,13 +91,20 @@ namespace VectorIdentityAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProjectData(int id, ProjectData projectData)
         {
+            //check if valid project
             if (id != projectData.Id)
             {
                 return BadRequest();
             }
 
+            //update project entries
+            if (projectData.Status == "New")
+            {
+                projectData.Status = "Accepted";
+            }
             _context.Entry(projectData).State = EntityState.Modified;
 
+            //save changes
             try
             {
                 await _context.SaveChangesAsync();
@@ -71,7 +121,17 @@ namespace VectorIdentityAPI.Controllers
                 }
             }
 
-            return NoContent();
+            //do more work
+            _queue.Enqueue(projectData);
+
+            //return accepted for backgroundwork
+            return Accepted();
+
+
+
+
+
+            //return NoContent();
         }
 
         /*
@@ -89,51 +149,30 @@ namespace VectorIdentityAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<ProjectData>> PostProjectData([FromForm] ProjectDataModel projectDataModel)
         {
-            /*
-            if (files != null)
-            {
-                
-                if (files.Length > 0)
-                {
-                    //Getting FileName
-                    var fileName = Path.GetFileName(files.FileName);
-                    //Getting file Extension
-                    var fileExtension = Path.GetExtension(fileName);
-                    // concatenating  FileName + FileExtension
-                    var newFileName = String.Concat(Convert.ToString(Guid.NewGuid()), fileExtension);
-
-                    var projectData = new ProjectData()
-                    {
-                        Name = newFileName,
-                        FileType = fileExtension
-                    };
-
-                    using (var target = new MemoryStream())
-                    {
-                        files.CopyTo(target);
-                        projectData.FileData = target.ToArray();
-                    }
-
-                    _context.ProjectData.Add(projectData);
-                    await _context.SaveChangesAsync();
-                    return CreatedAtAction("GetProjectData", new { id = projectData.Id }, projectData);
-                }
-                
-            }
-        */
             var projectData = new ProjectData()
             {
                 Name = projectDataModel.Name,
+                FileType = "dxf",
+                DateCreated = DateTime.UtcNow,
+                Status = "New",
+                Original = false,
+                ScoreIdentity = 0,
+                ScoreCorrectness = 0,
+                DateUploaded = DateTime.UtcNow,
+                DateUpdated = DateTime.UtcNow,
+                OwnerId = 3,
+                ProjectSetId = 2
+
                 //FileType = fileExtension
             };
 
             using (var target = new MemoryStream())
             {
-                projectDataModel.file.CopyTo(target);
+                projectDataModel.File.CopyTo(target);
                 projectData.FileData = target.ToArray();
             }
 
-            using (var reader = new StreamReader(projectDataModel.file.OpenReadStream()))
+            using (var reader = new StreamReader(projectDataModel.File.OpenReadStream()))
             {
                 var a = await reader.ReadToEndAsync();
             }
@@ -142,7 +181,7 @@ namespace VectorIdentityAPI.Controllers
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetProjectData", new { id = projectData.Id }, projectData);
         }
-       
+
         // DELETE: api/ProjectData/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProjectData(int id)

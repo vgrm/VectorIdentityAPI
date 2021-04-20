@@ -24,46 +24,62 @@ namespace VectorIdentityAPI.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
+                        .HasColumnName("id")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<double>("AngleEnd")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("angle_end");
 
                     b.Property<double>("AngleStart")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("angle_start");
 
                     b.Property<double>("DX")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("dx");
 
                     b.Property<double>("DY")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("dy");
 
                     b.Property<double>("DZ")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("dz");
 
                     b.Property<string>("Handle")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("handle");
 
-                    b.Property<int?>("ProjectDataId")
-                        .HasColumnType("int");
+                    b.Property<string>("Layer")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("layer");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int")
+                        .HasColumnName("project_id");
 
                     b.Property<double>("Radius")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("radius");
 
                     b.Property<double>("X")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("x");
 
                     b.Property<double>("Y")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("y");
 
                     b.Property<double>("Z")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("z");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectDataId");
+                    b.HasIndex("ProjectId");
 
-                    b.ToTable("Arc");
+                    b.ToTable("arc");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.ComparisonData", b =>
@@ -96,49 +112,66 @@ namespace VectorIdentityAPI.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
+                        .HasColumnName("id")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<double>("DX")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("dx");
 
                     b.Property<double>("DY")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("dy");
 
                     b.Property<double>("DZ")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("dz");
 
                     b.Property<string>("Handle")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("handle");
+
+                    b.Property<string>("Layer")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("layer");
 
                     b.Property<double>("Magnitude")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("magnitude");
 
-                    b.Property<int?>("ProjectDataId")
-                        .HasColumnType("int");
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int")
+                        .HasColumnName("project_id");
 
                     b.Property<double>("X1")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("x1");
 
                     b.Property<double>("X2")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("x2");
 
                     b.Property<double>("Y1")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("y1");
 
                     b.Property<double>("Y2")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("y2");
 
                     b.Property<double>("Z1")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("z1");
 
                     b.Property<double>("Z2")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("z2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectDataId");
+                    b.HasIndex("ProjectId");
 
-                    b.ToTable("Line");
+                    b.ToTable("line");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.Match", b =>
@@ -183,40 +216,57 @@ namespace VectorIdentityAPI.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
+                        .HasColumnName("id")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<double>("CorrectnessScore")
-                        .HasColumnType("float");
-
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date")
+                        .HasColumnName("date_created");
 
                     b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date")
+                        .HasColumnName("date_updated");
 
                     b.Property<DateTime>("DateUploaded")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date")
+                        .HasColumnName("date_uploaded");
 
                     b.Property<byte[]>("FileData")
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("varbinary(max)")
+                        .HasColumnName("file_data");
 
                     b.Property<string>("FileType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("IdentityScore")
-                        .HasColumnType("float");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("file_type");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("name");
 
                     b.Property<bool>("Original")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("original");
 
-                    b.Property<int?>("OwnerId")
-                        .HasColumnType("int");
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int")
+                        .HasColumnName("owner_id");
 
-                    b.Property<int?>("ProjectSetId")
-                        .HasColumnType("int");
+                    b.Property<int>("ProjectSetId")
+                        .HasColumnType("int")
+                        .HasColumnName("projectset_id");
+
+                    b.Property<double>("ScoreCorrectness")
+                        .HasColumnType("float")
+                        .HasColumnName("score_correctness");
+
+                    b.Property<double>("ScoreIdentity")
+                        .HasColumnType("float")
+                        .HasColumnName("score_identity");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("status");
 
                     b.HasKey("Id");
 
@@ -224,7 +274,7 @@ namespace VectorIdentityAPI.Migrations
 
                     b.HasIndex("ProjectSetId");
 
-                    b.ToTable("ProjectData");
+                    b.ToTable("projectdata");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectSet", b =>
@@ -232,25 +282,32 @@ namespace VectorIdentityAPI.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
+                        .HasColumnName("id")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("name");
 
-                    b.Property<int?>("OwnerId")
-                        .HasColumnType("int");
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int")
+                        .HasColumnName("owner_id");
 
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("status");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("ProjectSet");
+                    b.ToTable("projectset");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.User", b =>
@@ -258,36 +315,60 @@ namespace VectorIdentityAPI.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
+                        .HasColumnName("id")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("email");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("firstname");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("lastname");
 
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("password_hash");
 
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("password_salt");
 
                     b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("username");
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("user_data_email_key");
+
+                    b.HasIndex("Username")
+                        .IsUnique()
+                        .HasDatabaseName("user_data_username_key");
+
+                    b.ToTable("user_data");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.Arc", b =>
                 {
-                    b.HasOne("VectorIdentityAPI.Database.ProjectData", null)
+                    b.HasOne("VectorIdentityAPI.Database.ProjectData", "Project")
                         .WithMany("Arcs")
-                        .HasForeignKey("ProjectDataId");
+                        .HasForeignKey("ProjectId")
+                        .HasConstraintName("arc_projectdata_id_fkey")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.ComparisonData", b =>
@@ -307,9 +388,14 @@ namespace VectorIdentityAPI.Migrations
 
             modelBuilder.Entity("VectorIdentityAPI.Database.Line", b =>
                 {
-                    b.HasOne("VectorIdentityAPI.Database.ProjectData", null)
+                    b.HasOne("VectorIdentityAPI.Database.ProjectData", "Project")
                         .WithMany("Lines")
-                        .HasForeignKey("ProjectDataId");
+                        .HasForeignKey("ProjectId")
+                        .HasConstraintName("line_projectdata_id_fkey")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.Match", b =>
@@ -346,12 +432,18 @@ namespace VectorIdentityAPI.Migrations
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectData", b =>
                 {
                     b.HasOne("VectorIdentityAPI.Database.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .WithMany("Projects")
+                        .HasForeignKey("OwnerId")
+                        .HasConstraintName("projectdata_owner_id_fkey")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
 
                     b.HasOne("VectorIdentityAPI.Database.ProjectSet", "ProjectSet")
-                        .WithMany()
-                        .HasForeignKey("ProjectSetId");
+                        .WithMany("Projects")
+                        .HasForeignKey("ProjectSetId")
+                        .HasConstraintName("projectdata_projectset_id_fkey")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
 
@@ -361,8 +453,10 @@ namespace VectorIdentityAPI.Migrations
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectSet", b =>
                 {
                     b.HasOne("VectorIdentityAPI.Database.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .WithMany("ProjectSets")
+                        .HasForeignKey("OwnerId")
+                        .HasConstraintName("projectset_owner_id_fkey")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Owner");
                 });
@@ -377,6 +471,18 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("Arcs");
 
                     b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("VectorIdentityAPI.Database.ProjectSet", b =>
+                {
+                    b.Navigation("Projects");
+                });
+
+            modelBuilder.Entity("VectorIdentityAPI.Database.User", b =>
+                {
+                    b.Navigation("Projects");
+
+                    b.Navigation("ProjectSets");
                 });
 #pragma warning restore 612, 618
         }

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VectorIdentityAPI.Database;
+using VectorIdentityAPI.Services;
 
 namespace VectorIdentityAPI
 {
@@ -30,6 +31,12 @@ namespace VectorIdentityAPI
         {
 
             services.AddControllers();
+
+            services
+                .AddHostedService<BackgroundWorker>()
+                .AddSingleton<IBackgroundQueue<ProjectData>, BackgroundQueue<ProjectData>>();
+
+            services.AddScoped<IAnalyzeService, AnalyzeService>();
 
             services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DevConnection")));
 

@@ -22,9 +22,13 @@ namespace VectorIdentityAPI.Controllers
 
         // GET: api/Line
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Line>>> GetLine()
+        public async Task<ActionResult<IEnumerable<Line>>> GetLine(string projectId)
         {
-            return await _context.Line.ToListAsync();
+            projectId = "11";
+            var lines = _context.Line.Where(line => line.ProjectId.ToString() == projectId);
+
+            return Ok(lines);
+            //return await _context.Line.ToListAsync();
         }
 
         // GET: api/Line/5
@@ -77,10 +81,20 @@ namespace VectorIdentityAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Line>> PostLine(Line line)
         {
+            //check for nulls
+
+            var storedProject = await _context.ProjectData.FirstOrDefaultAsync(p => p.Id == line.ProjectId);
+
+            if(storedProject == null)
+            {
+                //return BadRequest();
+            }
+
             _context.Line.Add(line);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetLine", new { id = line.Id }, line);
+            return Ok();
+            //return CreatedAtAction("GetLine", new { id = line.Id }, line);
         }
 
         // DELETE: api/Line/5

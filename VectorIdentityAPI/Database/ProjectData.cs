@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,19 +16,23 @@ namespace VectorIdentityAPI.Database
         public byte[] FileData { get; set; }
         public DateTime DateCreated { get; set; }
 
+        //status: new > processing > analysed
+        public string Status { get; set; }
         public bool Original { get; set; }
-        public double IdentityScore { get; set; }
-        public double CorrectnessScore { get; set; }
+        public double ScoreIdentity { get; set; }
+        public double ScoreCorrectness { get; set; }
 
         public DateTime DateUploaded { get; set; }
         public DateTime DateUpdated { get; set; }
 
-        public User Owner { get; set; }
-        public ProjectSet ProjectSet { get; set; }
+        [JsonIgnore] public int OwnerId { get; set; }
+        [JsonIgnore] public User? Owner { get; set; }
+        public int ProjectSetId { get; set; }
+        [JsonIgnore] public ProjectSet ProjectSet { get; set; }
 
 
-        public ICollection<Line> Lines { get; set; }
-        public ICollection<Arc> Arcs { get; set; }
+        [JsonIgnore] public ICollection<Line> Lines { get; set; }
+        [JsonIgnore] public ICollection<Arc> Arcs { get; set; }
 
         //public ICollection<Match> Matches { get; set; }
 
