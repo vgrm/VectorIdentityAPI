@@ -13,7 +13,7 @@ using VectorIdentityAPI.Services;
 
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace VectorIdentityAPI.Controllers
 {
@@ -33,12 +33,17 @@ namespace VectorIdentityAPI.Controllers
 
         // GET: api/ProjectData
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProjectData>>> GetProjectData()
+        public async Task<ActionResult<IEnumerable<ProjectData>>> GetProjects(int id)
         {
-            //var projects = _context.ProjectData.Include(p => p.Lines).ToList();
-
-            //return Ok(projects);
-            return await _context.ProjectData.ToListAsync();
+            if (id != null)
+            {
+                var projects = _context.ProjectData
+                    .Where(project => project.ProjectSetId == id)
+                    .ToList();
+                return Ok(projects);
+            }
+            return Ok();
+            //return await _context.ProjectData.ToListAsync();
         }
 
         // GET: api/ProjectData/5
@@ -89,7 +94,7 @@ namespace VectorIdentityAPI.Controllers
         // PUT: api/ProjectData/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProjectData(int id, ProjectData projectData)
+        public async Task<IActionResult> PutProjectData(int id,ProjectData projectData)
         {
             //check if valid project
             if (id != projectData.Id)
@@ -97,11 +102,18 @@ namespace VectorIdentityAPI.Controllers
                 return BadRequest();
             }
 
+            Random random = new Random();
+            int r = random.Next(1, 1000);
+            string st = r.ToString();
+            projectData.Status = st;
+
             //update project entries
             if (projectData.Status == "New")
             {
                 projectData.Status = "Accepted";
             }
+
+
             _context.Entry(projectData).State = EntityState.Modified;
 
             //save changes
@@ -122,7 +134,7 @@ namespace VectorIdentityAPI.Controllers
             }
 
             //do more work
-            _queue.Enqueue(projectData);
+            //_queue.Enqueue(projectData);
 
             //return accepted for backgroundwork
             return Accepted();
@@ -161,7 +173,7 @@ namespace VectorIdentityAPI.Controllers
                 DateUploaded = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
                 OwnerId = 3,
-                ProjectSetId = 2
+                ProjectSetId = projectDataModel.ProjectSetId
 
                 //FileType = fileExtension
             };
@@ -201,6 +213,56 @@ namespace VectorIdentityAPI.Controllers
         private bool ProjectDataExists(int id)
         {
             return _context.ProjectData.Any(e => e.Id == id);
+        }
+
+
+        [HttpPatch]
+        [Route("{id}")]
+        public async Task<IActionResult> PatchProjectData(int id, [FromForm] ProjectDataModel model)
+        {
+
+            var projectData = await _context.ProjectData.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (projectData == null)
+            {
+                return NotFound();
+            }
+            /*
+
+            var newProjectData = new UpdateCollectionModel
+            {
+                Name = collection.Name,
+                Description = collection.Description,
+                ImageId = collection.ImageId
+            };
+
+            model.ApplyTo(newProjectData, ModelState);
+            */
+            //CustomValidation(newCollection);
+
+            //projectData.Name = newProjectData.Name;
+            //projectData.Description = newProjectData.Description;
+            //projectData.ImageId = newProjectData.ImageId;
+
+            if(model.Command == "ChangeOriginal")
+            {
+
+                var projects = _context.ProjectData
+                    .Where(project => project.ProjectSetId == projectData.ProjectSetId)
+                    .ToList();
+
+                foreach(var project in projects)
+                {
+                    project.Original = false;
+                }
+                projectData.Original = true;
+            }
+            projectData.Status = model.Status;
+            //projectData.Original = model.Original;
+
+            await _context.SaveChangesAsync();
+            //return CreatedAtAction("GetProjectData", new { id = projectData.Id }, projectData);
+            return Ok();
         }
     }
 }

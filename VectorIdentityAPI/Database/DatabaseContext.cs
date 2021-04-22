@@ -173,6 +173,36 @@ namespace VectorIdentityAPI.Database
                     .HasConstraintName("arc_projectdata_id_fkey")
                     .OnDelete(DeleteBehavior.Cascade);
             });
+            /*
+            modelBuilder.Entity<Match>(entity =>
+            {
+                entity.ToTable("arc");
+
+                entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Handle).HasColumnName("handle");
+                entity.Property(e => e.Layer).HasColumnName("layer");
+
+                entity.Property(e => e.X).HasColumnName("x");
+                entity.Property(e => e.Y).HasColumnName("y");
+                entity.Property(e => e.Z).HasColumnName("z");
+
+                entity.Property(e => e.Radius).HasColumnName("radius");
+                entity.Property(e => e.AngleStart).HasColumnName("angle_start");
+                entity.Property(e => e.AngleEnd).HasColumnName("angle_end");
+
+                entity.Property(e => e.DX).HasColumnName("dx");
+                entity.Property(e => e.DY).HasColumnName("dy");
+                entity.Property(e => e.DZ).HasColumnName("dz");
+
+                entity.Property(e => e.ProjectId).HasColumnName("project_id");
+                entity.HasOne(e => e.Project)
+                    .WithMany(e => e.Arcs)
+                    .HasForeignKey(e => e.ProjectId)
+                    .HasConstraintName("arc_projectdata_id_fkey")
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+            */
         }
 
 

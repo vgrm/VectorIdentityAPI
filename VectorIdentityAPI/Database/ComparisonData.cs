@@ -10,8 +10,8 @@ namespace VectorIdentityAPI.Database
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public ProjectData ProjectA { get; set; }
-        public ProjectData ProjectB { get; set; }
-        public ICollection<Match> Matches { get; set; }
+        //public ProjectData ProjectA { get; set; }
+        //public ProjectData ProjectB { get; set; }
+        //public ICollection<Match> Matches { get; set; }
     }
 }

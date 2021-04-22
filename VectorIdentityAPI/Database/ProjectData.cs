@@ -34,7 +34,7 @@ namespace VectorIdentityAPI.Database
         [JsonIgnore] public ICollection<Line> Lines { get; set; }
         [JsonIgnore] public ICollection<Arc> Arcs { get; set; }
 
-        //public ICollection<Match> Matches { get; set; }
+        [JsonIgnore] public ICollection<Match> Matches { get; set; }
 
     }
 }
