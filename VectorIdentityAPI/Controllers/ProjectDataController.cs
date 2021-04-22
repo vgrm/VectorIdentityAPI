@@ -102,11 +102,6 @@ namespace VectorIdentityAPI.Controllers
                 return BadRequest();
             }
 
-            Random random = new Random();
-            int r = random.Next(1, 1000);
-            string st = r.ToString();
-            projectData.Status = st;
-
             //update project entries
             if (projectData.Status == "New")
             {
@@ -134,7 +129,7 @@ namespace VectorIdentityAPI.Controllers
             }
 
             //do more work
-            //_queue.Enqueue(projectData);
+            _queue.Enqueue(projectData);
 
             //return accepted for backgroundwork
             return Accepted();

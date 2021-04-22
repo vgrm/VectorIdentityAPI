@@ -92,17 +92,7 @@ namespace VectorIdentityAPI.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProjectAId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProjectBId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ProjectAId");
-
-                    b.HasIndex("ProjectBId");
 
                     b.ToTable("ComparisonData");
                 });
@@ -179,36 +169,60 @@ namespace VectorIdentityAPI.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
+                        .HasColumnName("id")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ArcAId")
-                        .HasColumnType("int");
+                    b.Property<int>("ArcOriginalId")
+                        .HasColumnType("int")
+                        .HasColumnName("arc_original_id");
 
-                    b.Property<int?>("ArcBId")
-                        .HasColumnType("int");
+                    b.Property<int>("ArcTestId")
+                        .HasColumnType("int")
+                        .HasColumnName("arc_test_id");
 
-                    b.Property<int?>("ComparisonDataId")
-                        .HasColumnType("int");
+                    b.Property<string>("Info")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("info");
 
-                    b.Property<int?>("LineAId")
-                        .HasColumnType("int");
+                    b.Property<int>("LineOriginalId")
+                        .HasColumnType("int")
+                        .HasColumnName("line_original_id");
 
-                    b.Property<int?>("LineBId")
-                        .HasColumnType("int");
+                    b.Property<int>("LineTestId")
+                        .HasColumnType("int")
+                        .HasColumnName("line_test_id");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("OriginalProjectId")
+                        .HasColumnType("int")
+                        .HasColumnName("original_project_id");
+
+                    b.Property<int>("TestProjectId")
+                        .HasColumnType("int")
+                        .HasColumnName("test_project_id");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("type");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ArcAId");
+                    b.HasIndex("ArcOriginalId");
 
-                    b.HasIndex("ArcBId");
+                    b.HasIndex("ArcTestId");
 
-                    b.HasIndex("ComparisonDataId");
+                    b.HasIndex("LineOriginalId");
 
-                    b.HasIndex("LineAId");
+                    b.HasIndex("LineTestId");
 
-                    b.HasIndex("LineBId");
+                    b.HasIndex("OriginalProjectId");
 
-                    b.ToTable("Match");
+                    b.HasIndex("TestProjectId");
+
+                    b.ToTable("match");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectData", b =>
@@ -371,21 +385,6 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ComparisonData", b =>
-                {
-                    b.HasOne("VectorIdentityAPI.Database.ProjectData", "ProjectA")
-                        .WithMany()
-                        .HasForeignKey("ProjectAId");
-
-                    b.HasOne("VectorIdentityAPI.Database.ProjectData", "ProjectB")
-                        .WithMany()
-                        .HasForeignKey("ProjectBId");
-
-                    b.Navigation("ProjectA");
-
-                    b.Navigation("ProjectB");
-                });
-
             modelBuilder.Entity("VectorIdentityAPI.Database.Line", b =>
                 {
                     b.HasOne("VectorIdentityAPI.Database.ProjectData", "Project")
@@ -400,33 +399,59 @@ namespace VectorIdentityAPI.Migrations
 
             modelBuilder.Entity("VectorIdentityAPI.Database.Match", b =>
                 {
-                    b.HasOne("VectorIdentityAPI.Database.Arc", "ArcA")
-                        .WithMany()
-                        .HasForeignKey("ArcAId");
+                    b.HasOne("VectorIdentityAPI.Database.Arc", "ArcOriginal")
+                        .WithMany("OriginalMatches")
+                        .HasForeignKey("ArcOriginalId")
+                        .HasConstraintName("match_arc_original_id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.HasOne("VectorIdentityAPI.Database.Arc", "ArcB")
-                        .WithMany()
-                        .HasForeignKey("ArcBId");
+                    b.HasOne("VectorIdentityAPI.Database.Arc", "ArcTest")
+                        .WithMany("TestMatches")
+                        .HasForeignKey("ArcTestId")
+                        .HasConstraintName("match_arc_test_id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.HasOne("VectorIdentityAPI.Database.ComparisonData", null)
-                        .WithMany("Matches")
-                        .HasForeignKey("ComparisonDataId");
+                    b.HasOne("VectorIdentityAPI.Database.Line", "LineOriginal")
+                        .WithMany("OriginalMatches")
+                        .HasForeignKey("LineOriginalId")
+                        .HasConstraintName("match_line_original_id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.HasOne("VectorIdentityAPI.Database.Line", "LineA")
-                        .WithMany()
-                        .HasForeignKey("LineAId");
+                    b.HasOne("VectorIdentityAPI.Database.Line", "LineTest")
+                        .WithMany("TestMatches")
+                        .HasForeignKey("LineTestId")
+                        .HasConstraintName("match_line_test_id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.HasOne("VectorIdentityAPI.Database.Line", "LineB")
-                        .WithMany()
-                        .HasForeignKey("LineBId");
+                    b.HasOne("VectorIdentityAPI.Database.ProjectData", "OriginalProject")
+                        .WithMany("OriginalMatches")
+                        .HasForeignKey("OriginalProjectId")
+                        .HasConstraintName("match_originalprojectdata_id_fkey")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.Navigation("ArcA");
+                    b.HasOne("VectorIdentityAPI.Database.ProjectData", "TestProject")
+                        .WithMany("TestMatches")
+                        .HasForeignKey("TestProjectId")
+                        .HasConstraintName("match_testprojectdata_id_fkey")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.Navigation("ArcB");
+                    b.Navigation("ArcOriginal");
 
-                    b.Navigation("LineA");
+                    b.Navigation("ArcTest");
 
-                    b.Navigation("LineB");
+                    b.Navigation("LineOriginal");
+
+                    b.Navigation("LineTest");
+
+                    b.Navigation("OriginalProject");
+
+                    b.Navigation("TestProject");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectData", b =>
@@ -461,9 +486,18 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ComparisonData", b =>
+            modelBuilder.Entity("VectorIdentityAPI.Database.Arc", b =>
                 {
-                    b.Navigation("Matches");
+                    b.Navigation("OriginalMatches");
+
+                    b.Navigation("TestMatches");
+                });
+
+            modelBuilder.Entity("VectorIdentityAPI.Database.Line", b =>
+                {
+                    b.Navigation("OriginalMatches");
+
+                    b.Navigation("TestMatches");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectData", b =>
@@ -471,6 +505,10 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("Arcs");
 
                     b.Navigation("Lines");
+
+                    b.Navigation("OriginalMatches");
+
+                    b.Navigation("TestMatches");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectSet", b =>

@@ -173,36 +173,60 @@ namespace VectorIdentityAPI.Database
                     .HasConstraintName("arc_projectdata_id_fkey")
                     .OnDelete(DeleteBehavior.Cascade);
             });
-            /*
+
             modelBuilder.Entity<Match>(entity =>
             {
-                entity.ToTable("arc");
+                entity.ToTable("match");
 
                 entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Handle).HasColumnName("handle");
-                entity.Property(e => e.Layer).HasColumnName("layer");
+                entity.Property(e => e.Name).HasColumnName("name");
+                entity.Property(e => e.Info).HasColumnName("info");
+                entity.Property(e => e.Type).HasColumnName("type");
 
-                entity.Property(e => e.X).HasColumnName("x");
-                entity.Property(e => e.Y).HasColumnName("y");
-                entity.Property(e => e.Z).HasColumnName("z");
+                entity.Property(e => e.LineOriginalId).HasColumnName("line_original_id");
+                entity.HasOne(e => e.LineOriginal)
+                      .WithMany(e => e.OriginalMatches)
+                      .HasForeignKey(e => e.LineOriginalId)
+                      .HasConstraintName("match_line_original_id")
+                      .OnDelete(DeleteBehavior.NoAction);
 
-                entity.Property(e => e.Radius).HasColumnName("radius");
-                entity.Property(e => e.AngleStart).HasColumnName("angle_start");
-                entity.Property(e => e.AngleEnd).HasColumnName("angle_end");
+                entity.Property(e => e.LineTestId).HasColumnName("line_test_id");
+                entity.HasOne(e => e.LineTest)
+                      .WithMany(e => e.TestMatches)
+                      .HasForeignKey(e => e.LineTestId)
+                      .HasConstraintName("match_line_test_id")
+                      .OnDelete(DeleteBehavior.NoAction);
 
-                entity.Property(e => e.DX).HasColumnName("dx");
-                entity.Property(e => e.DY).HasColumnName("dy");
-                entity.Property(e => e.DZ).HasColumnName("dz");
+                entity.Property(e => e.ArcOriginalId).HasColumnName("arc_original_id");
+                entity.HasOne(e => e.ArcOriginal)
+                      .WithMany(e => e.OriginalMatches)
+                      .HasForeignKey(e => e.ArcOriginalId)
+                      .HasConstraintName("match_arc_original_id")
+                      .OnDelete(DeleteBehavior.NoAction);
 
-                entity.Property(e => e.ProjectId).HasColumnName("project_id");
-                entity.HasOne(e => e.Project)
-                    .WithMany(e => e.Arcs)
-                    .HasForeignKey(e => e.ProjectId)
-                    .HasConstraintName("arc_projectdata_id_fkey")
-                    .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(e => e.ArcTestId).HasColumnName("arc_test_id");
+                entity.HasOne(e => e.ArcTest)
+                      .WithMany(e => e.TestMatches)
+                      .HasForeignKey(e => e.ArcTestId)
+                      .HasConstraintName("match_arc_test_id")
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.Property(e => e.OriginalProjectId).HasColumnName("original_project_id");
+                entity.HasOne(e => e.OriginalProject)
+                    .WithMany(e => e.OriginalMatches)
+                    .HasForeignKey(e => e.OriginalProjectId)
+                    .HasConstraintName("match_originalprojectdata_id_fkey")
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                entity.Property(e => e.TestProjectId).HasColumnName("test_project_id");
+                entity.HasOne(e => e.TestProject)
+                      .WithMany(e => e.TestMatches)
+                      .HasForeignKey(e => e.TestProjectId)
+                      .HasConstraintName("match_testprojectdata_id_fkey")
+                      .OnDelete(DeleteBehavior.NoAction);
             });
-            */
+
         }
 
 

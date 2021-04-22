@@ -25,7 +25,7 @@ namespace VectorIdentityAPI.Services
         {
             _logger.LogInformation("Doing heavy analyzer logic ...");
 
-            if (projectData.Status == "Accepted" || projectData.Status == "Processing")
+            if (projectData.Status == "Accepted" || projectData.Status ==  "New" || projectData.Status == "Processing")
             {
                 //analyze file
 
@@ -45,12 +45,13 @@ namespace VectorIdentityAPI.Services
 
                 //update data
                 await UpdateData(projectData);
-
             }
+            await CalculateCorrectnessScore(projectData);
 
-
-
+            await Task.Delay(250, cancellationToken);
             _logger.LogInformation("\"{Name} by {Author}\" has been published!", projectData.Name, projectData.Owner);
+
+
         }
 
         private async Task UpdateData(ProjectData projectData)
@@ -273,7 +274,7 @@ namespace VectorIdentityAPI.Services
                     {
                         if (D[ii] == " 10" && D[ii + 2] == " 20" && D[ii + 4] == " 30" && D[ii + 6] == " 40")
                         {
-                            
+
                             X = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate((Convert.ToDouble(D[ii + 1]) * number)) / number));
                             Y = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate((Convert.ToDouble(D[ii + 3]) * number)) / number));
                             Z = Convert.ToDouble(string.Format("{0:0.################}", Math.Truncate((Convert.ToDouble(D[ii + 5]) * number)) / number));
@@ -558,7 +559,7 @@ namespace VectorIdentityAPI.Services
                     if (arc.X == arcTest.X && arc.Y == arcTest.Y && arc.Z == arcTest.Z &&
                         arc.Radius == arcTest.Radius &&
                         arc.DX == arcTest.DX && arc.DY == arcTest.DY && arc.DZ == arcTest.DZ
-                        && arc.Handle!=arcTest.Handle)
+                        && arc.Handle != arcTest.Handle)
                     {
 
                         double angleStart = 0;
@@ -794,6 +795,75 @@ namespace VectorIdentityAPI.Services
             }
             return arcs;
         }
+
+        private async Task CalculateCorrectnessScore(ProjectData testProject)
+        {
+            //int setId = testProject.ProjectSetId;
+            ProjectData originalProject = _databaseContext.ProjectData.Where(x => x.ProjectSetId == testProject.ProjectSetId && x.Original && x.Id != testProject.Id).FirstOrDefault();
+            if (originalProject == null) return;
+
+            //_databaseContext.Match.RemoveRange(_databaseContext.Match.Where(x => x.TestProjectId == testProject.Id));
+
+            List<Match> matchesLine = new List<Match>();
+            List<Match> matchesArc = new List<Match>();
+
+
+            List<Line> testLines = _databaseContext.Line.Where(x => x.ProjectId == testProject.Id).ToList();
+            List<Line> originalLines = _databaseContext.Line.Where(x => x.ProjectId == originalProject.Id).ToList();
+
+            matchesLine = FindMatchingLines(originalLines,testLines, originalProject.Id, testProject.Id);
+
+            _databaseContext.Match.AddRange(matchesLine);
+            await _databaseContext.SaveChangesAsync();
+
+            Match match = new Match
+            {
+                Name = "name",
+                Info = "info",
+                Type = "line match",
+
+            };
+
+            _databaseContext.Match.Add(match);
+            await _databaseContext.SaveChangesAsync();
+
+        }
+
+        private List<Match> FindMatchingLines(List<Line> originalLines, List<Line> testLines, int originalProjectId, int testProjectId)
+        {
+            List<Match> matches = new List<Match>();
+
+            foreach (var originalLine in originalLines)
+            {
+                foreach (var testLine in testLines)
+                {
+                    if (originalLine.Magnitude == testLine.Magnitude &&
+                       originalLine.DX == testLine.DX &&
+                       originalLine.DY == testLine.DY &&
+                       originalLine.DZ == testLine.DZ)
+                    {
+                        Match match = new Match
+                        {
+                            Name = "name",
+                            Info = "info",
+                            Type = "line match",
+                            LineOriginalId = originalLine.Id,
+                            LineTestId = testLine.Id,
+
+                            ArcOriginalId = 0,
+                            ArcTestId = 0,
+
+                            OriginalProjectId = originalProjectId,
+                            TestProjectId = testProjectId
+                        };
+                        matches.Add(match);
+                    }
+                }
+            }
+
+            return matches;
+        }
     }
 }
+
 
