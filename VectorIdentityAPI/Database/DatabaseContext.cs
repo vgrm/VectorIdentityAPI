@@ -212,6 +212,7 @@ namespace VectorIdentityAPI.Database
                       .HasConstraintName("match_arc_test_id")
                       .OnDelete(DeleteBehavior.NoAction);
 
+                /*
                 entity.Property(e => e.OriginalProjectId).HasColumnName("original_project_id");
                 entity.HasOne(e => e.OriginalProject)
                     .WithMany(e => e.OriginalMatches)
@@ -225,6 +226,7 @@ namespace VectorIdentityAPI.Database
                       .HasForeignKey(e => e.TestProjectId)
                       .HasConstraintName("match_testprojectdata_id_fkey")
                       .OnDelete(DeleteBehavior.NoAction);
+                */
             });
 
         }

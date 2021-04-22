@@ -26,12 +26,12 @@ namespace VectorIdentityAPI.Database
         [JsonIgnore] public Arc ArcTest { get; set; }
 
         //projects
-        public int OriginalProjectId { get; set; }
-        [JsonIgnore] public ProjectData OriginalProject { get; set; }
+        //public int OriginalProjectId { get; set; }
+        //[JsonIgnore] public ProjectData OriginalProject { get; set; }
 
 
-        public int TestProjectId { get; set; }
-        [JsonIgnore] public ProjectData TestProject { get; set; }
+        //public int TestProjectId { get; set; }
+        //[JsonIgnore] public ProjectData TestProject { get; set; }
 
     }
 }

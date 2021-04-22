@@ -196,14 +196,6 @@ namespace VectorIdentityAPI.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("name");
 
-                    b.Property<int>("OriginalProjectId")
-                        .HasColumnType("int")
-                        .HasColumnName("original_project_id");
-
-                    b.Property<int>("TestProjectId")
-                        .HasColumnType("int")
-                        .HasColumnName("test_project_id");
-
                     b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("type");
@@ -217,10 +209,6 @@ namespace VectorIdentityAPI.Migrations
                     b.HasIndex("LineOriginalId");
 
                     b.HasIndex("LineTestId");
-
-                    b.HasIndex("OriginalProjectId");
-
-                    b.HasIndex("TestProjectId");
 
                     b.ToTable("match");
                 });
@@ -427,20 +415,6 @@ namespace VectorIdentityAPI.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("VectorIdentityAPI.Database.ProjectData", "OriginalProject")
-                        .WithMany("OriginalMatches")
-                        .HasForeignKey("OriginalProjectId")
-                        .HasConstraintName("match_originalprojectdata_id_fkey")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("VectorIdentityAPI.Database.ProjectData", "TestProject")
-                        .WithMany("TestMatches")
-                        .HasForeignKey("TestProjectId")
-                        .HasConstraintName("match_testprojectdata_id_fkey")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.Navigation("ArcOriginal");
 
                     b.Navigation("ArcTest");
@@ -448,10 +422,6 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("LineOriginal");
 
                     b.Navigation("LineTest");
-
-                    b.Navigation("OriginalProject");
-
-                    b.Navigation("TestProject");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectData", b =>
@@ -505,10 +475,6 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("Arcs");
 
                     b.Navigation("Lines");
-
-                    b.Navigation("OriginalMatches");
-
-                    b.Navigation("TestMatches");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectSet", b =>
