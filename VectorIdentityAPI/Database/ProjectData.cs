@@ -18,6 +18,9 @@ namespace VectorIdentityAPI.Database
 
         //status: new > processing > analysed
         public string Status { get; set; }
+        public int StateId { get; set; }
+        [JsonIgnore] public ProjectState State { get; set; }
+
         public bool Original { get; set; }
         public double ScoreIdentity { get; set; }
         public double ScoreCorrectness { get; set; }
@@ -29,6 +32,7 @@ namespace VectorIdentityAPI.Database
         [JsonIgnore] public User? Owner { get; set; }
         public int ProjectSetId { get; set; }
         [JsonIgnore] public ProjectSet ProjectSet { get; set; }
+        [JsonIgnore] public int OriginalProjectId { get; set; }
 
 
         [JsonIgnore] public ICollection<Line> Lines { get; set; }

@@ -30,7 +30,7 @@ namespace VectorIdentityAPI
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
 
             services
                 .AddHostedService<BackgroundWorker>()
@@ -53,12 +53,7 @@ namespace VectorIdentityAPI
         {
             app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod());
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VectorIdentityAPI v1"));
-            }
+
 
             //app.UseHttpsRedirection();
 
@@ -70,6 +65,14 @@ namespace VectorIdentityAPI
             {
                 endpoints.MapControllers();
             });
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VectorIdentityAPI v1"));
+            }
+
         }
     }
 }

@@ -9,21 +9,24 @@ namespace VectorIdentityAPI.Database
     public class Match
     {
         public int Id { get; set; }
+
+        
+        
         public string Name { get; set; }
         public string Info { get; set; }
         public string Type { get; set; }
 
         //matching lines
         public int LineOriginalId { get; set; }
-        [JsonIgnore] public Line LineOriginal { get; set; }
+        //[JsonIgnore] public Line LineOriginal { get; set; }
         public int LineTestId { get; set; }
-        [JsonIgnore] public Line LineTest { get; set; }
+        //[JsonIgnore] public Line LineTest { get; set; }
 
         //matching arcs
         public int ArcOriginalId { get; set; }
-        [JsonIgnore] public Arc ArcOriginal { get; set; }
+        //[JsonIgnore] public Arc ArcOriginal { get; set; }
         public int ArcTestId { get; set; }
-        [JsonIgnore] public Arc ArcTest { get; set; }
+        //[JsonIgnore] public Arc ArcTest { get; set; }
 
         //projects
         //public int OriginalProjectId { get; set; }
@@ -32,6 +35,6 @@ namespace VectorIdentityAPI.Database
 
         //public int TestProjectId { get; set; }
         //[JsonIgnore] public ProjectData TestProject { get; set; }
-
+        
     }
 }

@@ -15,6 +15,9 @@ namespace VectorIdentityAPI.Database
         public int OwnerId { get; set; }
         [JsonIgnore] public User? Owner { get; set; }
 
+        public int StateId { get; set; }
+        [JsonIgnore] public ProjectSetState State { get; set; }
+
         [JsonIgnore] public ICollection<ProjectData> Projects { get; set; }
     }
 }

@@ -33,6 +33,7 @@ namespace VectorIdentityAPI.Services
 
                 //change status
                 projectData.Status = "Processing";
+                projectData.StateId = -2;
                 _databaseContext.Entry(projectData).State = EntityState.Modified;
 
                 //save changes
@@ -48,6 +49,7 @@ namespace VectorIdentityAPI.Services
                 //update data
                 await UpdateData(projectData);
             }
+
             await CalculateCorrectnessScore(projectData);
             await CalculateIdentityScore(projectData);
 
@@ -207,6 +209,7 @@ namespace VectorIdentityAPI.Services
                                 ProjectId = projectData.Id,
                                 Handle = Handle,
                                 Layer = Layer,
+                                Correct = false,
                                 X1 = X1,
                                 Y1 = Y1,
                                 Z1 = Z1,
@@ -324,6 +327,7 @@ namespace VectorIdentityAPI.Services
                         ProjectId = projectData.Id,
                         Handle = Handle,
                         Layer = Layer,
+                        Correct = false,
                         X = X,
                         Y = Y,
                         Z = Z,
@@ -449,6 +453,7 @@ namespace VectorIdentityAPI.Services
                                 ProjectId = line.ProjectId,
                                 Handle = line.Handle,
                                 Layer = line.Layer,
+                                Correct = false,
                                 X1 = minX,
                                 Y1 = minY,
                                 Z1 = minZ,
@@ -510,6 +515,7 @@ namespace VectorIdentityAPI.Services
                                 ProjectId = line.ProjectId,
                                 Handle = line.Handle,
                                 Layer = line.Layer,
+                                Correct = false,
                                 X1 = newX1,
                                 Y1 = newY1,
                                 Z1 = newZ1,
@@ -620,7 +626,7 @@ namespace VectorIdentityAPI.Services
                                 if ((arc.AngleStart < arcTest.AngleStart && arc.AngleEnd > arcTest.AngleStart) ||
                                         (arc.AngleStart < arcTest.AngleEnd && arc.AngleEnd > arcTest.AngleEnd))
                                 {
-                                    //THIS DOES NOT WORK
+                                    
                                     //find smallest and biggest angles for ends
                                     if (arc.AngleStart >= arcTest.AngleStart) angleStart = arc.AngleStart;
                                     else angleStart = arcTest.AngleStart;
@@ -639,6 +645,7 @@ namespace VectorIdentityAPI.Services
                                         ProjectId = arc.ProjectId,
                                         Handle = arc.Handle,
                                         Layer = arc.Layer,
+                                        Correct = false,
                                         X = arc.X,
                                         Y = arc.Y,
                                         Z = arc.Z,
@@ -685,6 +692,7 @@ namespace VectorIdentityAPI.Services
                                         ProjectId = arc.ProjectId,
                                         Handle = arc.Handle,
                                         Layer = arc.Layer,
+                                        Correct = false,
                                         X = arc.X,
                                         Y = arc.Y,
                                         Z = arc.Z,
@@ -724,6 +732,7 @@ namespace VectorIdentityAPI.Services
                                         ProjectId = arc.ProjectId,
                                         Handle = arc.Handle,
                                         Layer = arc.Layer,
+                                        Correct = false,
                                         X = arc.X,
                                         Y = arc.Y,
                                         Z = arc.Z,
@@ -770,6 +779,7 @@ namespace VectorIdentityAPI.Services
                                         ProjectId = arc.ProjectId,
                                         Handle = arc.Handle,
                                         Layer = arc.Layer,
+                                        Correct = false,
                                         X = arc.X,
                                         Y = arc.Y,
                                         Z = arc.Z,
@@ -823,7 +833,7 @@ namespace VectorIdentityAPI.Services
             matchesLine = FindMatchingLines(originalLines, testLines, originalProject.Id, testProject.Id);
             matchesArc = FindMatchingArcs(originalArcs, testArcs, originalProject.Id, testProject.Id);
 
-            double scoreCorrectness = (testLines.Count() + originalLines.Count() + testArcs.Count() + originalArcs.Count()) / (matchesLine.Count() * 2 + matchesArc.Count() * 2);
+            double scoreCorrectness =  (matchesLine.Count() * 2 + matchesArc.Count() * 2) / (testLines.Count() + originalLines.Count() + testArcs.Count() + originalArcs.Count());
             testProject.ScoreCorrectness = scoreCorrectness;
             //testProject.Status = "Evaluated";
             //_databaseContext.ProjectData.Update(testProject);
@@ -858,6 +868,9 @@ namespace VectorIdentityAPI.Services
                        originalLine.DY == testLine.DY &&
                        originalLine.DZ == testLine.DZ)
                     {
+                        testLine.Correct = true;
+                        _databaseContext.Entry(testLine).State = EntityState.Modified;
+                        
                         Match match = new Match
                         {
                             Name = "name",

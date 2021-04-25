@@ -12,7 +12,7 @@ namespace VectorIdentityAPI.Database
         public int Id { get; set; }
         public string Handle { get; set; }
         public string Layer { get; set; }
-
+        public bool Correct { get; set; }
         //Data
         public double X1 { get; set; }
         public double Y1 { get; set; }
@@ -32,7 +32,7 @@ namespace VectorIdentityAPI.Database
         public int ProjectId { get; set; }
         [JsonIgnore] public ProjectData Project { get; set; }
 
-        [JsonIgnore] public ICollection<Match> OriginalMatches { get; set; }
-        [JsonIgnore] public ICollection<Match> TestMatches { get; set; }
+        //[JsonIgnore] public ICollection<Match> OriginalMatches { get; set; }
+        //[JsonIgnore] public ICollection<Match> TestMatches { get; set; }
     }
 }

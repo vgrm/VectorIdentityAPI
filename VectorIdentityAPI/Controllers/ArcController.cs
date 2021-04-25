@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VectorIdentityAPI.Database;
+using VectorIdentityAPI.Models.Arc;
 
 namespace VectorIdentityAPI.Controllers
 {
@@ -25,6 +26,114 @@ namespace VectorIdentityAPI.Controllers
         public async Task<ActionResult<IEnumerable<Arc>>> GetArc()
         {
             return await _context.Arc.ToListAsync();
+        }
+
+        // GET: api/Arc/ArcsMatch
+        [HttpGet("ArcsMatch")]
+        public async Task<ActionResult<IEnumerable<Arc>>> GetArcsMatch(int id)
+        {
+            var arcs = _context.Arc
+                .Where(x => x.Correct && x.ProjectId == id)
+                .ToList();
+            return Ok(arcs);
+        }
+
+        // GET: api/Arc/ArcsIncorrect
+        [HttpGet("ArcsIncorrect")]
+        public async Task<ActionResult<IEnumerable<Arc>>> GetArcsIncorrect(int id)
+        {
+            var arcs = _context.Arc
+                .Where(x => !x.Correct && x.ProjectId == id)
+                .ToList();
+            return Ok(arcs);
+        }
+
+        // GET: api/Arc/ArcsMissing
+        [HttpGet("ArcsMissing")]
+        public async Task<ActionResult<IEnumerable<Arc>>> GetArcsMissing(int id)
+        {
+            var project = _context.ProjectData
+                .Where(x => x.Id == id)
+                .FirstOrDefault();
+
+            var arcsOriginal = _context.Arc
+                .Where(x => x.ProjectId == project.OriginalProjectId)
+                .ToList();
+
+            var arcsTest = _context.Arc
+                .Where(x => x.ProjectId == id)
+                .ToList();
+
+            var items = arcsOriginal
+                .Where(x => arcsTest
+                .All(y => y.DX != x.DX && y.DY != x.DY && y.DZ != x.DZ && y.Radius != x.Radius && y.AngleEnd != x.AngleEnd && y.AngleStart != x.AngleStart))
+                .ToList();
+
+            return Ok(items);
+        }
+
+        // GET: api/Arc/ArcHandle
+        [HttpGet("ArcsHandle")]
+        public async Task<ActionResult<IEnumerable<Arc>>> GetArcsHandle(int id)
+        {
+            var projectData = _context.ProjectData
+                .Where(x => x.Id == id)
+                .FirstOrDefault();
+
+            if (projectData == null) return Ok();
+            List<ProjectData> projects = _context.ProjectData.Where(x => x.ProjectSetId == projectData.ProjectSetId && !x.Original && x.Id != projectData.Id).ToList();
+            if (projects == null) return Ok();
+
+            List<Arc> arcs = _context.Arc.Where(x => x.ProjectId == projectData.Id).ToList();
+
+            List<Arc> matchingArcs = new List<Arc>();
+
+            foreach (var project in projects)
+            {
+                List<Arc> arcsTemp = _context.Arc
+                    .Include(x => x.Project)
+                    .Where(x => x.ProjectId == project.Id)
+                    .ToList();
+
+                var items = (from x in arcs
+                             join y in arcsTemp
+                             on new
+                             { x.Handle, x.DX, x.DY, x.DZ, x.Radius, x.Correct, x.AngleStart, x.AngleEnd }
+                             equals new
+                             { y.Handle, y.DX, y.DY, y.DZ, y.Radius, y.Correct,y.AngleStart,y.AngleEnd }
+                             select y)
+                             .ToList();
+
+                if (items != null)
+                {
+                    matchingArcs.AddRange(items);
+                }
+            }
+
+            var handles = matchingArcs.Select(x => new ArcResponseModel
+            {
+                Id = x.Id,
+                ProjectId = x.ProjectId,
+                Handle = x.Handle,
+                Layer = x.Layer,
+                Correct = x.Correct,
+
+                X = x.X,
+                Y = x.Y,
+                Z = x.Z,
+
+                Radius = x.Radius,
+                AngleStart=x.AngleStart,
+                AngleEnd=x.AngleEnd,
+
+                DX = x.DX,
+                DY = x.DY,
+                DZ = x.DZ,
+
+                Project = x.Project
+            });
+
+            return Ok(handles);
         }
 
         // GET: api/Arc/5

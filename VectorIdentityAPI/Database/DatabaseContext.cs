@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VectorIdentityAPI.Migrations;
 
 namespace VectorIdentityAPI.Database
 {
@@ -48,6 +49,22 @@ namespace VectorIdentityAPI.Database
                 entity.Property(e => e.PasswordSalt).HasColumnName("password_salt").IsRequired();
             });
 
+            modelBuilder.Entity<ProjectState>(entity =>
+            {
+                entity.ToTable("state");
+
+                entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
+                entity.Property(e => e.Name).HasColumnName("name");
+            });
+
+            modelBuilder.Entity<ProjectSetState>(entity =>
+            {
+                entity.ToTable("project_set_state");
+
+                entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
+                entity.Property(e => e.Name).HasColumnName("name");
+            });
+
             modelBuilder.Entity<ProjectSet>(entity =>
             {
                 entity.ToTable("projectset");
@@ -57,6 +74,13 @@ namespace VectorIdentityAPI.Database
                 entity.Property(e => e.Name).HasColumnName("name").IsRequired();
                 entity.Property(e => e.Description).HasColumnName("description");
                 entity.Property(e => e.Status).HasColumnName("status").IsRequired();
+
+                entity.Property(e => e.StateId).HasColumnName("state_id");
+                entity.HasOne(e => e.State)
+                    .WithMany(e => e.ProjectSets)
+                    .HasForeignKey(e => e.StateId)
+                    .HasConstraintName("project_set_state_id_fkey")
+                    .OnDelete(DeleteBehavior.NoAction);
 
                 entity.Property(e => e.OwnerId).HasColumnName("owner_id");
                 entity.HasOne(e => e.Owner)
@@ -75,6 +99,8 @@ namespace VectorIdentityAPI.Database
                 entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name).HasColumnName("name");
+                entity.Property(e => e.OriginalProjectId).HasColumnName("original_project_id");
+
                 entity.Property(e => e.FileType).HasColumnName("file_type");
                 entity.Property(e => e.FileData).HasColumnName("file_data");
 
@@ -99,6 +125,13 @@ namespace VectorIdentityAPI.Database
                     .HasColumnType("date")
                     .IsRequired();
 
+                entity.Property(e => e.StateId).HasColumnName("state_id");
+                entity.HasOne(e => e.State)
+                    .WithMany(e => e.Projects)
+                    .HasForeignKey(e => e.StateId)
+                    .HasConstraintName("project_data_state_id_fkey")
+                    .OnDelete(DeleteBehavior.NoAction);
+
                 entity.Property(e => e.OwnerId).HasColumnName("owner_id");
                 entity.HasOne(e => e.Owner)
                     .WithMany(e => e.Projects)
@@ -122,6 +155,7 @@ namespace VectorIdentityAPI.Database
 
                 entity.Property(e => e.Handle).HasColumnName("handle");
                 entity.Property(e => e.Layer).HasColumnName("layer");
+                entity.Property(e => e.Correct).HasColumnName("correct");
 
                 entity.Property(e => e.X1).HasColumnName("x1");
                 entity.Property(e => e.Y1).HasColumnName("y1");
@@ -153,6 +187,7 @@ namespace VectorIdentityAPI.Database
 
                 entity.Property(e => e.Handle).HasColumnName("handle");
                 entity.Property(e => e.Layer).HasColumnName("layer");
+                entity.Property(e => e.Correct).HasColumnName("correct");
 
                 entity.Property(e => e.X).HasColumnName("x");
                 entity.Property(e => e.Y).HasColumnName("y");
@@ -174,66 +209,9 @@ namespace VectorIdentityAPI.Database
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            modelBuilder.Entity<Match>(entity =>
-            {
-                entity.ToTable("match");
-
-                entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
-
-                entity.Property(e => e.Name).HasColumnName("name");
-                entity.Property(e => e.Info).HasColumnName("info");
-                entity.Property(e => e.Type).HasColumnName("type");
-
-                entity.Property(e => e.LineOriginalId).HasColumnName("line_original_id");
-                entity.HasOne(e => e.LineOriginal)
-                      .WithMany(e => e.OriginalMatches)
-                      .HasForeignKey(e => e.LineOriginalId)
-                      .HasConstraintName("match_line_original_id")
-                      .OnDelete(DeleteBehavior.NoAction);
-
-                entity.Property(e => e.LineTestId).HasColumnName("line_test_id");
-                entity.HasOne(e => e.LineTest)
-                      .WithMany(e => e.TestMatches)
-                      .HasForeignKey(e => e.LineTestId)
-                      .HasConstraintName("match_line_test_id")
-                      .OnDelete(DeleteBehavior.NoAction);
-
-                entity.Property(e => e.ArcOriginalId).HasColumnName("arc_original_id");
-                entity.HasOne(e => e.ArcOriginal)
-                      .WithMany(e => e.OriginalMatches)
-                      .HasForeignKey(e => e.ArcOriginalId)
-                      .HasConstraintName("match_arc_original_id")
-                      .OnDelete(DeleteBehavior.NoAction);
-
-                entity.Property(e => e.ArcTestId).HasColumnName("arc_test_id");
-                entity.HasOne(e => e.ArcTest)
-                      .WithMany(e => e.TestMatches)
-                      .HasForeignKey(e => e.ArcTestId)
-                      .HasConstraintName("match_arc_test_id")
-                      .OnDelete(DeleteBehavior.NoAction);
-
-                /*
-                entity.Property(e => e.OriginalProjectId).HasColumnName("original_project_id");
-                entity.HasOne(e => e.OriginalProject)
-                    .WithMany(e => e.OriginalMatches)
-                    .HasForeignKey(e => e.OriginalProjectId)
-                    .HasConstraintName("match_originalprojectdata_id_fkey")
-                    .OnDelete(DeleteBehavior.NoAction);
-
-                entity.Property(e => e.TestProjectId).HasColumnName("test_project_id");
-                entity.HasOne(e => e.TestProject)
-                      .WithMany(e => e.TestMatches)
-                      .HasForeignKey(e => e.TestProjectId)
-                      .HasConstraintName("match_testprojectdata_id_fkey")
-                      .OnDelete(DeleteBehavior.NoAction);
-                */
-            });
-
+            modelBuilder.Seed();
+            
         }
-
-
-
-
     }
 
 }

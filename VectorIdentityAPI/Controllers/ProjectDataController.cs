@@ -168,6 +168,7 @@ namespace VectorIdentityAPI.Controllers
                 DateUploaded = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
                 OwnerId = 3,
+                StateId = -1,
                 ProjectSetId = projectDataModel.ProjectSetId
 
                 //FileType = fileExtension
