@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using VectorIdentityAPI.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace VectorIdentityAPI.Services
+namespace VectorIdentityAPI.Services.Analysis
 {
     public class AnalyzeService : IAnalyzeService
     {

@@ -8,12 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VectorIdentityAPI.Database;
 using VectorIdentityAPI.Models.ProjectData;
-using VectorIdentityAPI.Services;
+using VectorIdentityAPI.Services.Analysis;
 
 
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
+using System.Security.Claims;
 
 namespace VectorIdentityAPI.Controllers
 {
@@ -33,6 +34,7 @@ namespace VectorIdentityAPI.Controllers
 
         // GET: api/ProjectData
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ProjectData>>> GetProjects(int id)
         {
             if (id != null)
@@ -48,9 +50,15 @@ namespace VectorIdentityAPI.Controllers
 
         // GET: api/ProjectData/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<ProjectData>> GetProjectData(int id)
         {
             var project = await _context.ProjectData.Include(p => p.Lines).FirstOrDefaultAsync(p => p.Id == id);
+
+            if(project == null)
+            {
+                return BadRequest();
+            }
 
             var customProject = new ProjectDataResponseModel
             {
@@ -94,10 +102,40 @@ namespace VectorIdentityAPI.Controllers
         // PUT: api/ProjectData/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutProjectData(int id,ProjectData projectData)
         {
+
             //check if valid project
             if (id != projectData.Id)
+            {
+                return BadRequest();
+            }
+
+            var userClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+            if (userClaim == null)
+            {
+                return BadRequest();
+            }
+
+            int userId = int.Parse(userClaim.Value);
+            var user = _context.User.Find(userId);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var projectSet = await _context.ProjectSet
+                .Where(x => x.Id == projectData.ProjectSetId)
+                .FirstOrDefaultAsync();
+
+            if (projectSet == null)
+            {
+                return BadRequest();
+            }
+
+            if (projectSet.OwnerId != user.Id)
             {
                 return BadRequest();
             }
@@ -114,7 +152,7 @@ namespace VectorIdentityAPI.Controllers
             //save changes
             try
             {
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -133,29 +171,26 @@ namespace VectorIdentityAPI.Controllers
 
             //return accepted for backgroundwork
             return Accepted();
-
-
-
-
-
-            //return NoContent();
         }
 
-        /*
-        // POST: api/ProjectData
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ProjectData>> PostProjectData(ProjectData projectData)
-        {
-            _context.ProjectData.Add(projectData);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetProjectData", new { id = projectData.Id }, projectData);
-        }
-        */
-        [HttpPost]
+        [Authorize]
         public async Task<ActionResult<ProjectData>> PostProjectData([FromForm] ProjectDataModel projectDataModel)
         {
+            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return BadRequest();
+            }
+
+            int id = int.Parse(userId.Value);
+            var user = await _context.User.FindAsync(id);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
             var projectData = new ProjectData()
             {
                 Name = projectDataModel.Name,
@@ -167,7 +202,7 @@ namespace VectorIdentityAPI.Controllers
                 ScoreCorrectness = 0,
                 DateUploaded = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
-                OwnerId = 3,
+                OwnerId = user.Id,
                 StateId = -1,
                 ProjectSetId = projectDataModel.ProjectSetId
 
@@ -192,13 +227,44 @@ namespace VectorIdentityAPI.Controllers
 
         // DELETE: api/ProjectData/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteProjectData(int id)
         {
+            var userClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+            if (userClaim == null)
+            {
+                return BadRequest();
+            }
+
+            int userId = int.Parse(userClaim.Value);
+            var user = _context.User.Find(userId);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
             var projectData = await _context.ProjectData.FindAsync(id);
             if (projectData == null)
             {
-                return NotFound();
+                return BadRequest();
             }
+
+            var projectSet = await _context.ProjectSet
+                .Where(x => x.Id == projectData.ProjectSetId)
+                .FirstOrDefaultAsync();
+
+            if (projectSet == null)
+            {
+                return BadRequest();
+            }
+
+            if ((projectSet.OwnerId != user.Id) && (projectData.StateId != -1 && user.Id != projectData.OwnerId))
+            {
+                return BadRequest();
+            }
+
+
 
             _context.ProjectData.Remove(projectData);
             await _context.SaveChangesAsync();
@@ -211,11 +277,32 @@ namespace VectorIdentityAPI.Controllers
             return _context.ProjectData.Any(e => e.Id == id);
         }
 
-
         [HttpPatch]
         [Route("{id}")]
+        [Authorize]
         public async Task<IActionResult> PatchProjectData(int id, [FromForm] ProjectDataModel model)
         {
+
+            /*
+            if (id != model.Id)
+            {
+                return BadRequest();
+            }
+            */
+
+            var userClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+            if (userClaim == null)
+            {
+                return BadRequest();
+            }
+
+            int userId = int.Parse(userClaim.Value);
+            var user = _context.User.Find(userId);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
 
             var projectData = await _context.ProjectData.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -223,22 +310,21 @@ namespace VectorIdentityAPI.Controllers
             {
                 return NotFound();
             }
-            /*
 
-            var newProjectData = new UpdateCollectionModel
+            var projectSet = await _context.ProjectSet
+                //.Where(x => x.Id == model.ProjectSetId)
+                .Where(x => x.Id == projectData.ProjectSetId)
+                .FirstOrDefaultAsync();
+
+            if (projectSet == null)
             {
-                Name = collection.Name,
-                Description = collection.Description,
-                ImageId = collection.ImageId
-            };
+                return BadRequest();
+            }
 
-            model.ApplyTo(newProjectData, ModelState);
-            */
-            //CustomValidation(newCollection);
-
-            //projectData.Name = newProjectData.Name;
-            //projectData.Description = newProjectData.Description;
-            //projectData.ImageId = newProjectData.ImageId;
+            if (projectSet.OwnerId != user.Id)
+            {
+                return BadRequest();
+            }
 
             if(model.Command == "ChangeOriginal")
             {

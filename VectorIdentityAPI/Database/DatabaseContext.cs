@@ -21,12 +21,19 @@ namespace VectorIdentityAPI.Database
         }
 
         public DbSet<User> User { get; set; }
+        public DbSet<UserRole> UserRole { get; set; }
+
         public DbSet<ProjectSet> ProjectSet { get; set; }
+        public DbSet<ProjectSetState> ProjectSetState { get; set; }
+
         public DbSet<ProjectData> ProjectData { get; set; }
+        public DbSet<ProjectState> ProjectState { get; set; }
+
         public DbSet<Line> Line { get; set; }
         public DbSet<Arc> Arc { get; set; }
-        public DbSet<ComparisonData> ComparisonData { get; set; }
+
         public DbSet<Match> Match { get; set; }
+        public DbSet<ComparisonData> ComparisonData { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,18 +42,32 @@ namespace VectorIdentityAPI.Database
                 entity.ToTable("user_data");
 
                 entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
-
-                entity.HasIndex(e => e.Email).HasDatabaseName("user_data_email_key").IsUnique();
                 entity.HasIndex(e => e.Username).HasDatabaseName("user_data_username_key").IsUnique();
 
                 entity.Property(e => e.Username).HasColumnName("username").IsRequired();
-                entity.Property(e => e.Email).HasColumnName("email").IsRequired();
+                entity.Property(e => e.Email).HasColumnName("email");
 
                 entity.Property(e => e.FirstName).HasColumnName("firstname");
                 entity.Property(e => e.LastName).HasColumnName("lastname");
 
                 entity.Property(e => e.PasswordHash).HasColumnName("password_hash").IsRequired();
                 entity.Property(e => e.PasswordSalt).HasColumnName("password_salt").IsRequired();
+
+                entity.Property(e => e.RoleId).HasColumnName("role_id");
+                entity.HasOne(e => e.Role)
+                    .WithMany(e => e.Users)
+                    .HasForeignKey(e => e.RoleId)
+                    .HasConstraintName("user_data_role_id_fkey")
+                    .OnDelete(DeleteBehavior.NoAction);
+
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.ToTable("user_role");
+
+                entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
+                entity.Property(e => e.Name).HasColumnName("name");
             });
 
             modelBuilder.Entity<ProjectState>(entity =>

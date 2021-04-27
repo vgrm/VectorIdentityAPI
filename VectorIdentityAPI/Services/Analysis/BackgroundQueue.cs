@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VectorIdentityAPI.Services
+namespace VectorIdentityAPI.Services.Analysis
 {
     public class BackgroundQueue<T> : IBackgroundQueue<T> where T : class
     {

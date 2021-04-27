@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -7,13 +8,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using VectorIdentityAPI.Database;
-using VectorIdentityAPI.Services;
+using VectorIdentityAPI.Services.Analysis;
+using VectorIdentityAPI.Services.Authentification;
 
 namespace VectorIdentityAPI
 {
@@ -29,14 +34,41 @@ namespace VectorIdentityAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var jwtToken = Configuration.GetValue<string>("JWTSecret");
+            var key = Encoding.ASCII.GetBytes(jwtToken);
+
+            var TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidIssuer = "vector-control-system",
+                ValidAudience = "vector-control-system",
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ClockSkew = TimeSpan.Zero // remove delay of token when expire
+            };
+
+            services.AddAuthentication(
+                options => { options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
+                .AddJwtBearer(cfg => { cfg.TokenValidationParameters = TokenValidationParameters; });
+
+
+            services.AddAuthorization(cfg =>
+            {
+                cfg.AddPolicy("Admin", policy => policy.RequireClaim("type", "Admin"));
+                cfg.AddPolicy("Agent", policy => policy.RequireClaim("type", "Agent"));
+                cfg.AddPolicy("ClearanceLevel1", policy => policy.RequireClaim("ClearanceLevel", "1", "2"));
+                cfg.AddPolicy("ClearanceLevel2", policy => policy.RequireClaim("ClearanceLevel", "2"));
+            });
 
             services.AddControllers().AddNewtonsoftJson();
 
-            services
-                .AddHostedService<BackgroundWorker>()
+            services.AddHostedService<BackgroundWorker>()
                 .AddSingleton<IBackgroundQueue<ProjectData>, BackgroundQueue<ProjectData>>();
 
             services.AddScoped<IAnalyzeService, AnalyzeService>();
+
+            services.AddScoped<IUserService, UserService>();
+
+            services.AddTransient<RNGCryptoServiceProvider>();
+            services.AddTransient<ICryptographicService, CryptographicService>();
 
             services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DevConnection")));
 
@@ -45,12 +77,28 @@ namespace VectorIdentityAPI
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "VectorIdentityAPI", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter JWT with Bearer into field",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                { new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer"}
+            },
+        new string[] {}
+    }
+    });
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //app.UseDeveloperExceptionPage();
             app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod());
 
 
@@ -59,6 +107,7 @@ namespace VectorIdentityAPI
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

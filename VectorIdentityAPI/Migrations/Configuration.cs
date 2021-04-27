@@ -51,6 +51,19 @@ namespace VectorIdentityAPI.Migrations
                     Name = "Private"
                 }
             );
+
+            modelBuilder.Entity<UserRole>().HasData(
+                new UserRole
+                {
+                    Id = -1,
+                    Name = "Admin",
+                },
+                new UserRole
+                {
+                    Id = -2,
+                    Name = "User"
+                }
+            );
         }
     }
 }

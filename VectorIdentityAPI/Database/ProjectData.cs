@@ -28,7 +28,7 @@ namespace VectorIdentityAPI.Database
         public DateTime DateUploaded { get; set; }
         public DateTime DateUpdated { get; set; }
 
-        [JsonIgnore] public int OwnerId { get; set; }
+        public int OwnerId { get; set; }
         [JsonIgnore] public User? Owner { get; set; }
         public int ProjectSetId { get; set; }
         [JsonIgnore] public ProjectSet ProjectSet { get; set; }

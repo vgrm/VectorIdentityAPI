@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using VectorIdentityAPI.Database;
+using VectorIdentityAPI.Models.Error;
+using VectorIdentityAPI.Models.User;
+using VectorIdentityAPI.Services.Authentification;
 
 namespace VectorIdentityAPI.Controllers
 {
@@ -14,28 +22,45 @@ namespace VectorIdentityAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly DatabaseContext _context;
+        private readonly IUserService _userService;
 
-        public UserController(DatabaseContext context)
+        public UserController(DatabaseContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         // GET: api/User
         [HttpGet]
+        [Authorize(Policy = "Admin")]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
             return await _context.User.ToListAsync();
         }
 
         // GET: api/User/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        [HttpGet("{username}")]
+        [Authorize]
+        public async Task<ActionResult<User>> GetUser(string username)
         {
-            var user = await _context.User.FindAsync(id);
+            var userClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+            if (userClaim == null)
+            {
+                return BadRequest();
+            }
+
+            int userId = int.Parse(userClaim.Value);
+
+            var user = await _context.User
+                .Include(x=>x.Role)
+                .Where(x => x.Username == username)
+                .FirstOrDefaultAsync();
+
+            //var user = await _context.User.FindAsync(id);
 
             if (user == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             return user;
@@ -43,13 +68,32 @@ namespace VectorIdentityAPI.Controllers
 
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        [HttpPut("{username}")]
+        public async Task<IActionResult> PutUser(string username, User userData)
         {
-            if (id != user.Id)
+            var userClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+            var adminClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == "type");
+            if (userClaim == null)
             {
                 return BadRequest();
             }
+
+            int userId = int.Parse(userClaim.Value);
+
+
+            var user = await _context.User
+                .Where(x => x.Username == username)
+                .FirstOrDefaultAsync();
+
+            if (userId != user.Id && adminClaim.Value != "Admin")
+            {
+                return BadRequest();
+            }
+
+            user.RoleId = userData.RoleId;
+            user.FirstName = userData.FirstName;
+            user.LastName = userData.LastName;
+            user.Email = userData.Email;
 
             _context.Entry(user).State = EntityState.Modified;
 
@@ -59,7 +103,7 @@ namespace VectorIdentityAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!UserExists(user.Id))
                 {
                     return NotFound();
                 }
@@ -72,25 +116,114 @@ namespace VectorIdentityAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/User
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        [HttpPost("signup")]
+        public async Task<ActionResult<UserModel>> Signup([FromBody] SigninModel signinModel)
         {
-            _context.User.Add(user);
-            await _context.SaveChangesAsync();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                var token = await _userService.RegistrateAsync(signinModel.Username, signinModel.Password);
+                var tokenModel = new TokenModel(token);
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+                var user = _context.User
+                    .Include(x => x.Role)
+                    .Where(x => x.Username == signinModel.Username)
+                    .FirstOrDefault();
+
+                var userModel = new UserModel
+                {
+                    Id = user.Id,
+
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+
+                    RoleId = user.RoleId,
+                    Role = user.Role,
+                    Token = tokenModel
+                };
+
+                return Ok(userModel);
+
+                //return Ok(tokenModel);
+            }
+            catch (UsernameTakenException)
+            {
+                return BadRequest(new ErrorResponseModel("Username is taken"));
+            }
+            catch (RegistrationException)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost("signin")]
+        public async Task<ActionResult<UserModel>> Signin([FromBody] SigninModel signinModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var token = await _userService.AuthenticateAsync(signinModel.Username, signinModel.Password);
+                var tokenModel = new TokenModel(token);
+
+
+                var user = _context.User
+                    .Include(x => x.Role)
+                    .Where(x => x.Username == signinModel.Username)
+                    .FirstOrDefault();
+
+                var userModel = new UserModel
+                {
+                    Id = user.Id,
+
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+
+                    RoleId = user.RoleId,
+                    Role = user.Role,
+                    Token = tokenModel
+                };
+
+                return Ok(userModel);
+            }
+            catch (UsernameOrPasswordInvalidException)
+            {
+                return BadRequest(new ErrorResponseModel("Username or password is invalid"));
+            }
         }
 
         // DELETE: api/User/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        [HttpDelete("{username}")]
+        public async Task<IActionResult> DeleteUser(string username)
         {
-            var user = await _context.User.FindAsync(id);
-            if (user == null)
+
+            var userClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+            var adminClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == "type");
+            if (userClaim == null)
             {
-                return NotFound();
+                return BadRequest();
+            }
+
+            int userId = int.Parse(userClaim.Value);
+
+
+            var user = await _context.User
+                .Where(x => x.Username == username)
+                .FirstOrDefaultAsync();
+
+            if (userId != user.Id && adminClaim.Value != "Admin")
+            {
+                return BadRequest();
             }
 
             _context.User.Remove(user);

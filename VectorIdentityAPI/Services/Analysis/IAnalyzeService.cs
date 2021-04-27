@@ -6,7 +6,7 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using VectorIdentityAPI.Database;
 
-namespace VectorIdentityAPI.Services
+namespace VectorIdentityAPI.Services.Analysis
 {
     public interface IAnalyzeService
     {

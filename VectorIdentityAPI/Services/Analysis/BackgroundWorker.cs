@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using VectorIdentityAPI.Database;
 
-namespace VectorIdentityAPI.Services
+namespace VectorIdentityAPI.Services.Analysis
 {
     public class BackgroundWorker : BackgroundService
     {

@@ -402,8 +402,7 @@ namespace VectorIdentityAPI.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("email");
 
                     b.Property<string>("FirstName")
@@ -424,6 +423,10 @@ namespace VectorIdentityAPI.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("password_salt");
 
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int")
+                        .HasColumnName("role_id");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)")
@@ -431,15 +434,42 @@ namespace VectorIdentityAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("user_data_email_key");
+                    b.HasIndex("RoleId");
 
                     b.HasIndex("Username")
                         .IsUnique()
                         .HasDatabaseName("user_data_username_key");
 
                     b.ToTable("user_data");
+                });
+
+            modelBuilder.Entity("VectorIdentityAPI.Database.UserRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("user_role");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            Name = "User"
+                        });
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.Arc", b =>
@@ -516,6 +546,18 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("State");
                 });
 
+            modelBuilder.Entity("VectorIdentityAPI.Database.User", b =>
+                {
+                    b.HasOne("VectorIdentityAPI.Database.UserRole", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .HasConstraintName("user_data_role_id_fkey")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectData", b =>
                 {
                     b.Navigation("Arcs");
@@ -543,6 +585,11 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("Projects");
 
                     b.Navigation("ProjectSets");
+                });
+
+            modelBuilder.Entity("VectorIdentityAPI.Database.UserRole", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

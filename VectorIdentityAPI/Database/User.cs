@@ -17,6 +17,9 @@ namespace VectorIdentityAPI.Database
         [JsonIgnore] public string PasswordHash { get; set; }
         [JsonIgnore] public string PasswordSalt { get; set; }
 
+        public int RoleId { get; set; }
+        [JsonIgnore] public UserRole Role { get; set; }
+
         [JsonIgnore] public ICollection<ProjectData> Projects { get; set; }
         [JsonIgnore] public ICollection<ProjectSet> ProjectSets { get; set; }
     }
