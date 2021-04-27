@@ -90,7 +90,10 @@ namespace VectorIdentityAPI.Controllers
                 return BadRequest();
             }
 
-            user.RoleId = userData.RoleId;
+            if (adminClaim.Value == "Admin")
+            {
+                user.RoleId = userData.RoleId;
+            }
             user.FirstName = userData.FirstName;
             user.LastName = userData.LastName;
             user.Email = userData.Email;

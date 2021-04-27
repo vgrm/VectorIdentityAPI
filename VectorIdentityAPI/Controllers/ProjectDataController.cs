@@ -48,6 +48,87 @@ namespace VectorIdentityAPI.Controllers
             //return await _context.ProjectData.ToListAsync();
         }
 
+        // GET: api/ProjectData/user
+        [HttpGet("user")]
+        [Authorize]
+        public async Task<ActionResult<ProjectData>> GetProjectData(string id)
+        {
+            var userClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+            if (userClaim == null)
+            {
+                return BadRequest();
+            }
+
+            //int userId = int.Parse(userClaim.Value);
+            var user = await _context.User
+                .Where(x => x.Username == id)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+            var projects = _context.ProjectData
+                .Where(x => x.OwnerId == user.Id)
+                .ToList();
+
+            /*
+            var projects = _context.ProjectData
+                .Where(x=>x.OwnerId == user.Id)
+                .ToList()
+                .Select( x=> new ProjectDataResponseModel
+                {
+                    Id = project.Id,
+                    Name = project.Name,
+                    FileType = project.FileType,
+                    FileData = project.FileData,
+                    DateCreated = project.DateCreated,
+
+                    Status = project.Status,
+                    Original = project.Original,
+                    ScoreIdentity = project.ScoreIdentity,
+                    ScoreCorrectness = project.ScoreCorrectness,
+
+                    DateUploaded = project.DateUploaded,
+                    DateUpdated = project.DateUpdated,
+
+                    OwnerId = project.OwnerId,
+                    ProjectSetId = project.ProjectSetId,
+                }
+                );
+            */
+            if (projects == null)
+            {
+                return BadRequest();
+            }
+            /*
+            var customProject = new ProjectDataResponseModel
+            {
+                Id = project.Id,
+
+                Name = project.Name,
+                FileType = project.FileType,
+                FileData = project.FileData,
+                DateCreated = project.DateCreated,
+
+                Status = project.Status,
+                Original = project.Original,
+                ScoreIdentity = project.ScoreIdentity,
+                ScoreCorrectness = project.ScoreCorrectness,
+
+                DateUploaded = project.DateUploaded,
+                DateUpdated = project.DateUpdated,
+
+                OwnerId = project.OwnerId,
+                ProjectSetId = project.ProjectSetId,
+
+                //Lines = project.Lines,
+                //Arcs = null
+            };
+            */
+            return Ok(projects);
+        }
+
         // GET: api/ProjectData/5
         [HttpGet("{id}")]
         [Authorize]
