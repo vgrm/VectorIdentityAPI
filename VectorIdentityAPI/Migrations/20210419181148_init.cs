@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace VectorIdentityAPI.Migrations
+namespace vector_control_system_api.Migrations
 {
     public partial class init : Migration
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VectorIdentityAPI.Database
+namespace vector_control_system_api.Database
 {
     public class Arc
     {

@@ -8,9 +8,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using VectorIdentityAPI.Database;
+using vector_control_system_api.Database;
 
-namespace VectorIdentityAPI.Services.Authentification
+namespace vector_control_system_api.Services.Authentification
 {
     public class UserService : IUserService
     {

@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VectorIdentityAPI.Services.Authentification
+namespace vector_control_system_api.Services.Authentification
 {
     public class CryptographicService : ICryptographicService
     {

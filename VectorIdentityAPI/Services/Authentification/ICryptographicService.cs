@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VectorIdentityAPI.Services.Authentification
+namespace vector_control_system_api.Services.Authentification
 {
     public interface ICryptographicService
     {

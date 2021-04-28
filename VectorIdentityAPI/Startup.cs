@@ -16,11 +16,11 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using VectorIdentityAPI.Database;
-using VectorIdentityAPI.Services.Analysis;
-using VectorIdentityAPI.Services.Authentification;
+using vector_control_system_api.Database;
+using vector_control_system_api.Services.Analysis;
+using vector_control_system_api.Services.Authentification;
 
-namespace VectorIdentityAPI
+namespace vector_control_system_api
 {
     public class Startup
     {
@@ -76,7 +76,7 @@ namespace VectorIdentityAPI
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "VectorIdentityAPI", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "vector_control_system_api", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -119,7 +119,7 @@ namespace VectorIdentityAPI
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VectorIdentityAPI v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "vector_control_system_api v1"));
             }
 
         }

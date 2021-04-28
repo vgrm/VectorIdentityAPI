@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VectorIdentityAPI.Models.Arc
+namespace vector_control_system_api.Models.Arc
 {
     public class ArcResponseModel
     {

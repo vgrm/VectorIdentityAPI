@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using VectorIdentityAPI.Database;
+using vector_control_system_api.Database;
 
-namespace VectorIdentityAPI.Controllers
+namespace vector_control_system_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VectorIdentityAPI.Models.User
+namespace vector_control_system_api.Models.User
 {
     public class UserModel
     {

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using VectorIdentityAPI.Database;
+using vector_control_system_api.Database;
 
-namespace VectorIdentityAPI.Services.Analysis
+namespace vector_control_system_api.Services.Analysis
 {
     public interface IAnalyzeService
     {

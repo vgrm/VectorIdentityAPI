@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VectorIdentityAPI.Models.ProjectData
+namespace vector_control_system_api.Models.ProjectData
 {
     public class ProjectMatchModel
     {

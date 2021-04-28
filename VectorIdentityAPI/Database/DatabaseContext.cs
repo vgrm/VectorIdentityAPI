@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VectorIdentityAPI.Migrations;
+using vector_control_system_api.Migrations;
 
-namespace VectorIdentityAPI.Database
+namespace vector_control_system_api.Database
 {
     public class DatabaseContext : DbContext
     {

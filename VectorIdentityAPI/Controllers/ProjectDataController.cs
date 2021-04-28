@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using VectorIdentityAPI.Database;
-using VectorIdentityAPI.Models.ProjectData;
-using VectorIdentityAPI.Services.Analysis;
+using vector_control_system_api.Database;
+using vector_control_system_api.Models.ProjectData;
+using vector_control_system_api.Services.Analysis;
 
 
 using System.Net;
@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using System.Security.Claims;
 
-namespace VectorIdentityAPI.Controllers
+namespace vector_control_system_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

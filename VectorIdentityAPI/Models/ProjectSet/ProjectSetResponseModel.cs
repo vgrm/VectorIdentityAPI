@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VectorIdentityAPI.Models.ProjectSet
+namespace vector_control_system_api.Models.ProjectSet
 {
     public class ProjectSetResponseModel
     {

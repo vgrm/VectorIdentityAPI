@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using VectorIdentityAPI.Database;
+using vector_control_system_api.Database;
 using Microsoft.EntityFrameworkCore;
-using VectorIdentityAPI.Models.ProjectData;
+using vector_control_system_api.Models.ProjectData;
 
-namespace VectorIdentityAPI.Services.Analysis
+namespace vector_control_system_api.Services.Analysis
 {
     public class AnalyzeService : IAnalyzeService
     {

@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using VectorIdentityAPI.Database;
-using VectorIdentityAPI.Models.Error;
-using VectorIdentityAPI.Models.User;
-using VectorIdentityAPI.Services.Authentification;
+using vector_control_system_api.Database;
+using vector_control_system_api.Models.Error;
+using vector_control_system_api.Models.User;
+using vector_control_system_api.Services.Authentification;
 
-namespace VectorIdentityAPI.Controllers
+namespace vector_control_system_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using VectorIdentityAPI.Database;
+using vector_control_system_api.Database;
 
-namespace VectorIdentityAPI.Migrations
+namespace vector_control_system_api.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     [Migration("20210424173144_AddProjectStateTable")]
@@ -21,7 +21,7 @@ namespace VectorIdentityAPI.Migrations
                 .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.Arc", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.Arc", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,7 +88,7 @@ namespace VectorIdentityAPI.Migrations
                     b.ToTable("arc");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ComparisonData", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.ComparisonData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -103,7 +103,7 @@ namespace VectorIdentityAPI.Migrations
                     b.ToTable("ComparisonData");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.Line", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.Line", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -174,7 +174,7 @@ namespace VectorIdentityAPI.Migrations
                     b.ToTable("line");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.Match", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.Match", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -207,7 +207,7 @@ namespace VectorIdentityAPI.Migrations
                     b.ToTable("Match");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ProjectData", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.ProjectData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -283,7 +283,7 @@ namespace VectorIdentityAPI.Migrations
                     b.ToTable("projectdata");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ProjectSet", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.ProjectSet", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -316,7 +316,7 @@ namespace VectorIdentityAPI.Migrations
                     b.ToTable("projectset");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ProjectState", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.ProjectState", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -333,7 +333,7 @@ namespace VectorIdentityAPI.Migrations
                     b.ToTable("state");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.User", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -382,9 +382,9 @@ namespace VectorIdentityAPI.Migrations
                     b.ToTable("user_data");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.Arc", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.Arc", b =>
                 {
-                    b.HasOne("VectorIdentityAPI.Database.ProjectData", "Project")
+                    b.HasOne("vector_control_system_api.Database.ProjectData", "Project")
                         .WithMany("Arcs")
                         .HasForeignKey("ProjectId")
                         .HasConstraintName("arc_projectdata_id_fkey")
@@ -394,9 +394,9 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.Line", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.Line", b =>
                 {
-                    b.HasOne("VectorIdentityAPI.Database.ProjectData", "Project")
+                    b.HasOne("vector_control_system_api.Database.ProjectData", "Project")
                         .WithMany("Lines")
                         .HasForeignKey("ProjectId")
                         .HasConstraintName("line_projectdata_id_fkey")
@@ -406,23 +406,23 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ProjectData", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.ProjectData", b =>
                 {
-                    b.HasOne("VectorIdentityAPI.Database.User", "Owner")
+                    b.HasOne("vector_control_system_api.Database.User", "Owner")
                         .WithMany("Projects")
                         .HasForeignKey("OwnerId")
                         .HasConstraintName("projectdata_owner_id_fkey")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
-                    b.HasOne("VectorIdentityAPI.Database.ProjectSet", "ProjectSet")
+                    b.HasOne("vector_control_system_api.Database.ProjectSet", "ProjectSet")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectSetId")
                         .HasConstraintName("projectdata_projectset_id_fkey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("VectorIdentityAPI.Database.ProjectState", "State")
+                    b.HasOne("vector_control_system_api.Database.ProjectState", "State")
                         .WithMany("Projects")
                         .HasForeignKey("StateId")
                         .HasConstraintName("project_data_state_id_fkey")
@@ -436,9 +436,9 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("State");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ProjectSet", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.ProjectSet", b =>
                 {
-                    b.HasOne("VectorIdentityAPI.Database.User", "Owner")
+                    b.HasOne("vector_control_system_api.Database.User", "Owner")
                         .WithMany("ProjectSets")
                         .HasForeignKey("OwnerId")
                         .HasConstraintName("projectset_owner_id_fkey")
@@ -447,24 +447,24 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ProjectData", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.ProjectData", b =>
                 {
                     b.Navigation("Arcs");
 
                     b.Navigation("Lines");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ProjectSet", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.ProjectSet", b =>
                 {
                     b.Navigation("Projects");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ProjectState", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.ProjectState", b =>
                 {
                     b.Navigation("Projects");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.User", b =>
+            modelBuilder.Entity("vector_control_system_api.Database.User", b =>
                 {
                     b.Navigation("Projects");
 

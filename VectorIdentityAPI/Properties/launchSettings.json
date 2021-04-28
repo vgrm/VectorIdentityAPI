@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "VectorIdentityAPI": {
+    "vector_control_system_api": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,
