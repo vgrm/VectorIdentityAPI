@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31019.35
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VectorIdentityAPI", "VectorIdentityAPI.csproj", "{2C7D7571-5EA8-4903-80A7-CC287BAB39CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2C7D7571-5EA8-4903-80A7-CC287BAB39CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C7D7571-5EA8-4903-80A7-CC287BAB39CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C7D7571-5EA8-4903-80A7-CC287BAB39CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C7D7571-5EA8-4903-80A7-CC287BAB39CA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8844D3E6-9365-44B2-8BEA-A64FD6B9ED40}
+	EndGlobalSection
+EndGlobal
