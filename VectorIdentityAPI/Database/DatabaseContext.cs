@@ -32,8 +32,7 @@ namespace VectorIdentityAPI.Database
         public DbSet<Line> Line { get; set; }
         public DbSet<Arc> Arc { get; set; }
 
-        public DbSet<Match> Match { get; set; }
-        public DbSet<ComparisonData> ComparisonData { get; set; }
+        public DbSet<Layer> Layer { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -72,7 +71,7 @@ namespace VectorIdentityAPI.Database
 
             modelBuilder.Entity<ProjectState>(entity =>
             {
-                entity.ToTable("state");
+                entity.ToTable("projectdata_state");
 
                 entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
                 entity.Property(e => e.Name).HasColumnName("name");
@@ -80,7 +79,7 @@ namespace VectorIdentityAPI.Database
 
             modelBuilder.Entity<ProjectSetState>(entity =>
             {
-                entity.ToTable("project_set_state");
+                entity.ToTable("projectset_state");
 
                 entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
                 entity.Property(e => e.Name).HasColumnName("name");
@@ -100,7 +99,7 @@ namespace VectorIdentityAPI.Database
                 entity.HasOne(e => e.State)
                     .WithMany(e => e.ProjectSets)
                     .HasForeignKey(e => e.StateId)
-                    .HasConstraintName("project_set_state_id_fkey")
+                    .HasConstraintName("projectset_state_id_fkey")
                     .OnDelete(DeleteBehavior.NoAction);
 
                 entity.Property(e => e.OwnerId).HasColumnName("owner_id");
@@ -150,7 +149,7 @@ namespace VectorIdentityAPI.Database
                 entity.HasOne(e => e.State)
                     .WithMany(e => e.Projects)
                     .HasForeignKey(e => e.StateId)
-                    .HasConstraintName("project_data_state_id_fkey")
+                    .HasConstraintName("projectdata_state_id_fkey")
                     .OnDelete(DeleteBehavior.NoAction);
 
                 entity.Property(e => e.OwnerId).HasColumnName("owner_id");
@@ -227,6 +226,23 @@ namespace VectorIdentityAPI.Database
                     .WithMany(e => e.Arcs)
                     .HasForeignKey(e => e.ProjectId)
                     .HasConstraintName("arc_projectdata_id_fkey")
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Layer>(entity =>
+            {
+                entity.ToTable("layer");
+
+                entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name).HasColumnName("name");
+                entity.Property(e => e.LineType).HasColumnName("linetype");
+
+                entity.Property(e => e.ProjectId).HasColumnName("project_id");
+                entity.HasOne(e => e.Project)
+                    .WithMany(e => e.Layers)
+                    .HasForeignKey(e => e.ProjectId)
+                    .HasConstraintName("layer_projectdata_id_fkey")
                     .OnDelete(DeleteBehavior.Cascade);
             });
 

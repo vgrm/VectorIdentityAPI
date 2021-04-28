@@ -86,19 +86,31 @@ namespace VectorIdentityAPI.Migrations
                     b.ToTable("arc");
                 });
 
-            modelBuilder.Entity("VectorIdentityAPI.Database.ComparisonData", b =>
+            modelBuilder.Entity("VectorIdentityAPI.Database.Layer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
+                        .HasColumnName("id")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("LineType")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("linetype");
+
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int")
+                        .HasColumnName("project_id");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ComparisonData");
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("layer");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.Line", b =>
@@ -170,39 +182,6 @@ namespace VectorIdentityAPI.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("line");
-                });
-
-            modelBuilder.Entity("VectorIdentityAPI.Database.Match", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ArcOriginalId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ArcTestId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Info")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("LineOriginalId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LineTestId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Match");
                 });
 
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectData", b =>
@@ -334,7 +313,7 @@ namespace VectorIdentityAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("project_set_state");
+                    b.ToTable("projectset_state");
 
                     b.HasData(
                         new
@@ -368,7 +347,7 @@ namespace VectorIdentityAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("state");
+                    b.ToTable("projectdata_state");
 
                     b.HasData(
                         new
@@ -484,6 +463,18 @@ namespace VectorIdentityAPI.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("VectorIdentityAPI.Database.Layer", b =>
+                {
+                    b.HasOne("VectorIdentityAPI.Database.ProjectData", "Project")
+                        .WithMany("Layers")
+                        .HasForeignKey("ProjectId")
+                        .HasConstraintName("layer_projectdata_id_fkey")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("VectorIdentityAPI.Database.Line", b =>
                 {
                     b.HasOne("VectorIdentityAPI.Database.ProjectData", "Project")
@@ -515,7 +506,7 @@ namespace VectorIdentityAPI.Migrations
                     b.HasOne("VectorIdentityAPI.Database.ProjectState", "State")
                         .WithMany("Projects")
                         .HasForeignKey("StateId")
-                        .HasConstraintName("project_data_state_id_fkey")
+                        .HasConstraintName("projectdata_state_id_fkey")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -537,7 +528,7 @@ namespace VectorIdentityAPI.Migrations
                     b.HasOne("VectorIdentityAPI.Database.ProjectSetState", "State")
                         .WithMany("ProjectSets")
                         .HasForeignKey("StateId")
-                        .HasConstraintName("project_set_state_id_fkey")
+                        .HasConstraintName("projectset_state_id_fkey")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -561,6 +552,8 @@ namespace VectorIdentityAPI.Migrations
             modelBuilder.Entity("VectorIdentityAPI.Database.ProjectData", b =>
                 {
                     b.Navigation("Arcs");
+
+                    b.Navigation("Layers");
 
                     b.Navigation("Lines");
                 });

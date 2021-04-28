@@ -6,6 +6,7 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using VectorIdentityAPI.Database;
 using Microsoft.EntityFrameworkCore;
+using VectorIdentityAPI.Models.ProjectData;
 
 namespace VectorIdentityAPI.Services.Analysis
 {
@@ -25,7 +26,7 @@ namespace VectorIdentityAPI.Services.Analysis
         {
             _logger.LogInformation("Doing heavy analyzer logic ...");
 
-            if (projectData.Status == "Accepted" || projectData.Status == "New" 
+            if (projectData.Status == "Accepted" || projectData.Status == "New"
                 //|| projectData.Status == "Processing"
                 )
             {
@@ -626,7 +627,7 @@ namespace VectorIdentityAPI.Services.Analysis
                                 if ((arc.AngleStart < arcTest.AngleStart && arc.AngleEnd > arcTest.AngleStart) ||
                                         (arc.AngleStart < arcTest.AngleEnd && arc.AngleEnd > arcTest.AngleEnd))
                                 {
-                                    
+
                                     //find smallest and biggest angles for ends
                                     if (arc.AngleStart >= arcTest.AngleStart) angleStart = arc.AngleStart;
                                     else angleStart = arcTest.AngleStart;
@@ -821,8 +822,8 @@ namespace VectorIdentityAPI.Services.Analysis
 
             //_databaseContext.Match.RemoveRange(_databaseContext.Match.Where(x => x.TestProjectId == testProject.Id));
 
-            List<Match> matchesLine = new List<Match>();
-            List<Match> matchesArc = new List<Match>();
+            List<ProjectMatchModel> matchesLine = new List<ProjectMatchModel>();
+            List<ProjectMatchModel> matchesArc = new List<ProjectMatchModel>();
 
 
             List<Line> testLines = _databaseContext.Line.Where(x => x.ProjectId == testProject.Id).ToList();
@@ -833,7 +834,7 @@ namespace VectorIdentityAPI.Services.Analysis
             matchesLine = FindMatchingLines(originalLines, testLines, originalProject.Id, testProject.Id);
             matchesArc = FindMatchingArcs(originalArcs, testArcs, originalProject.Id, testProject.Id);
 
-            double scoreCorrectness =  (matchesLine.Count() * 2 + matchesArc.Count() * 2) / (testLines.Count() + originalLines.Count() + testArcs.Count() + originalArcs.Count());
+            double scoreCorrectness = (matchesLine.Count() * 2 + matchesArc.Count() * 2) / (testLines.Count() + originalLines.Count() + testArcs.Count() + originalArcs.Count());
             testProject.ScoreCorrectness = scoreCorrectness;
             //testProject.Status = "Evaluated";
             //_databaseContext.ProjectData.Update(testProject);
@@ -855,9 +856,9 @@ namespace VectorIdentityAPI.Services.Analysis
             */
         }
 
-        private List<Match> FindMatchingLines(List<Line> originalLines, List<Line> testLines, int originalProjectId, int testProjectId)
+        private List<ProjectMatchModel> FindMatchingLines(List<Line> originalLines, List<Line> testLines, int originalProjectId, int testProjectId)
         {
-            List<Match> matches = new List<Match>();
+            List<ProjectMatchModel> matches = new List<ProjectMatchModel>();
 
             foreach (var originalLine in originalLines)
             {
@@ -870,8 +871,8 @@ namespace VectorIdentityAPI.Services.Analysis
                     {
                         testLine.Correct = true;
                         _databaseContext.Entry(testLine).State = EntityState.Modified;
-                        
-                        Match match = new Match
+
+                        ProjectMatchModel match = new ProjectMatchModel
                         {
                             Name = "name",
                             Info = "info",
@@ -893,9 +894,9 @@ namespace VectorIdentityAPI.Services.Analysis
             return matches;
         }
 
-        private List<Match> FindMatchingArcs(List<Arc> originalArcs, List<Arc> testArcs, int originalProjectId, int testProjectId)
+        private List<ProjectMatchModel> FindMatchingArcs(List<Arc> originalArcs, List<Arc> testArcs, int originalProjectId, int testProjectId)
         {
-            List<Match> matches = new List<Match>();
+            List<ProjectMatchModel> matches = new List<ProjectMatchModel>();
 
             foreach (var originalArc in originalArcs)
             {
@@ -911,7 +912,7 @@ namespace VectorIdentityAPI.Services.Analysis
                        originalArc.AngleStart == testArc.AngleStart &&
                        originalArc.AngleEnd == testArc.AngleEnd)
                     {
-                        Match match = new Match
+                        ProjectMatchModel match = new ProjectMatchModel
                         {
                             Name = "name",
                             Info = "info",
@@ -942,22 +943,34 @@ namespace VectorIdentityAPI.Services.Analysis
             List<Arc> arcs = _databaseContext.Arc.Where(x => x.ProjectId == projectData.Id).ToList();
 
             List<Line> matchingLines = new List<Line>();
+            List<Arc> matchingArcs = new List<Arc>();
 
             foreach (var project in projects)
             {
                 List<Line> linesTemp = _databaseContext.Line.Where(x => x.ProjectId == project.Id).ToList();
-                var items = (from x in lines
-                             join y in linesTemp 
-                             on new
-                             { x.Handle, x.DX, x.DY, x.DZ, x.Magnitude }
-                             equals new
-                             { y.Handle, y.DX, y.DY, y.DZ, y.Magnitude }
-                             select x)
-                             .ToList();
+                List<Arc> arcsTemp = _databaseContext.Arc.Where(x => x.ProjectId == project.Id).ToList();
+                var itemsLine = (from x in lines
+                                 join y in linesTemp
+                                 on new
+                                 { x.Handle, x.DX, x.DY, x.DZ, x.Magnitude }
+                                 equals new
+                                 { y.Handle, y.DX, y.DY, y.DZ, y.Magnitude }
+                                 select x)
+                                 .ToList();
 
-                matchingLines.AddRange(items);
+                var itemsArc = (from x in arcs
+                                join y in arcsTemp
+                                on new
+                                { x.Handle, x.DX, x.DY, x.DZ, x.Radius, x.AngleStart, x.AngleEnd }
+                                equals new
+                                { y.Handle, y.DX, y.DY, y.DZ, y.Radius, y.AngleStart, y.AngleEnd }
+                                select x)
+                                .ToList();
+
+                matchingLines.AddRange(itemsLine);
+                matchingArcs.AddRange(itemsArc);
             }
-            double scoreIdentity = matchingLines.Count();
+            double scoreIdentity = matchingLines.Count() + matchingArcs.Count();
 
             projectData.ScoreIdentity = scoreIdentity;
             _databaseContext.Entry(projectData).State = EntityState.Modified;

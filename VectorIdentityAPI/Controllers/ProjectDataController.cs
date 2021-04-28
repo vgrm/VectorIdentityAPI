@@ -420,7 +420,7 @@ namespace VectorIdentityAPI.Controllers
                 }
                 projectData.Original = true;
             }
-            projectData.Status = model.Status;
+            //projectData.Status = model.Status;
             //projectData.Original = model.Original;
 
             await _context.SaveChangesAsync();
