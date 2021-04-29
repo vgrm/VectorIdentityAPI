@@ -34,10 +34,13 @@ namespace vector_control_system_api.Database
         [JsonIgnore] public ProjectSet ProjectSet { get; set; }
         [JsonIgnore] public int OriginalProjectId { get; set; }
 
-
         [JsonIgnore] public ICollection<Line> Lines { get; set; }
         [JsonIgnore] public ICollection<Arc> Arcs { get; set; }
         [JsonIgnore] public ICollection<Layer> Layers { get; set; }
+
+        public double OffsetX { get; set; }
+        public double OffsetY { get; set; }
+        public double OffsetZ { get; set; }
         //[JsonIgnore] public ICollection<Match> OriginalMatches { get; set; }
         //[JsonIgnore] public ICollection<Match> TestMatches { get; set; }
 

@@ -55,13 +55,19 @@ namespace vector_control_system_api.Controllers
         [HttpGet("LinesMissing")]
         public async Task<ActionResult<IEnumerable<Line>>> GetLinesMissing(int id)
         {
+            const double min = -0.00000000000019;
+            const double max = 0.00000000000019;
             //this project
             var project = _context.ProjectData
                 .Where(x => x.Id == id)
                 .FirstOrDefault();
 
+            var originalProject = _context.ProjectData
+                .Where(x => x.ProjectSetId == project.ProjectSetId && x.Original)
+                .FirstOrDefault();
+
             var linesOriginal = _context.Line
-                .Where(x => x.ProjectId == project.OriginalProjectId)
+                .Where(x => x.ProjectId == originalProject.Id)
                 .ToList();
 
             var linesTest = _context.Line
@@ -76,13 +82,43 @@ namespace vector_control_system_api.Controllers
                          { y.DX, y.DY, y.DZ, y.Magnitude }
                          select x)
                 .ToList();
-            */
+            
             var items2 = linesOriginal
                 .Where(x => linesTest
                 .All(y => y.DX != x.DX && y.DY != x.DY && y.DZ != x.DZ && y.Magnitude != x.Magnitude))
                 .ToList();
+            */
+            List<Line> items = new List<Line>();
 
-            return Ok(items2);
+            foreach (var originalLine in linesOriginal)
+            {
+                foreach (var testLine in linesTest)
+                {
+                    if (
+                    (originalLine.Magnitude - testLine.Magnitude is >= min and <= max &&
+                    originalLine.DX - testLine.DX is >= min and <= max &&
+                    originalLine.DY - testLine.DY is >= min and <= max &&
+                    originalLine.DZ - testLine.DZ is >= min and <= max &&
+                    originalLine.X1 - testLine.X1 - project.OffsetX is >= min and <= max &&
+                    originalLine.Y1 - testLine.Y1 - project.OffsetY is >= min and <= max &&
+                    originalLine.Z1 - testLine.Z1 - project.OffsetZ is >= min and <= max)
+                    ||
+                   (testLine.Magnitude - originalLine.Magnitude is >= min and <= max &&
+                    testLine.DX - originalLine.DX is >= min and <= max &&
+                    testLine.DY - originalLine.DY is >= min and <= max &&
+                    testLine.DZ - originalLine.DZ is >= min and <= max &&
+                    testLine.X1 - originalLine.X1 - project.OffsetX is >= min and <= max &&
+                    testLine.Y1 - originalLine.Y1 - project.OffsetY is >= min and <= max &&
+                    testLine.Z1 - originalLine.Z1 - project.OffsetZ is >= min and <= max)
+                    )
+                    {
+                        items.Add(originalLine);
+                    }
+                }
+            }
+            var items2 = linesOriginal.Where(x => !items.Any(y => y.Handle == x.Handle)).ToList();
+            
+                        return Ok(items2);
             //return await _context.Line.ToListAsync();
         }
 

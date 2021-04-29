@@ -285,8 +285,10 @@ namespace vector_control_system_api.Controllers
                 DateUpdated = DateTime.UtcNow,
                 OwnerId = user.Id,
                 StateId = -1,
-                ProjectSetId = projectDataModel.ProjectSetId
-
+                ProjectSetId = projectDataModel.ProjectSetId,
+                OffsetX = 0,
+                OffsetY = 0,
+                OffsetZ = 0
                 //FileType = fileExtension
             };
 

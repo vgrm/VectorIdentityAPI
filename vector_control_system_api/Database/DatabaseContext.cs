@@ -165,6 +165,10 @@ namespace vector_control_system_api.Database
                     .HasForeignKey(d => d.ProjectSetId)
                     .HasConstraintName("projectdata_projectset_id_fkey");
 
+                entity.Property(e => e.OffsetX).HasColumnName("offset_x");
+                entity.Property(e => e.OffsetY).HasColumnName("offset_y");
+                entity.Property(e => e.OffsetZ).HasColumnName("offset_z");
+
             });
 
             modelBuilder.Entity<Line>(entity =>

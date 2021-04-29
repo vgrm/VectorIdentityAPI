@@ -410,7 +410,7 @@ namespace vector_control_system_api.Services.Analysis
                     if (((line.DX == lineTest.DX && line.DY == lineTest.DY && line.DZ == lineTest.DZ) ||
                         (line.DX == -lineTest.DX && line.DY == -lineTest.DY && line.DZ == -lineTest.DZ)) &&
                         (line.Handle != lineTest.Handle)) { }*/
-                    if (line.Handle == "252" && lineTest.Handle == "24E")
+                    if (line.Handle == "244" && lineTest.Handle == "23B")
                     {
                         int aaa = 0;
 
@@ -422,7 +422,7 @@ namespace vector_control_system_api.Services.Analysis
                         double VALUE2_2 = lineTest.DY - line.DY;
                         double VALUE2_3 = lineTest.DZ - line.DZ;
                     }
-                    if (line.Handle == "24E" && lineTest.Handle == "252")
+                    if (line.Handle == "23B" && lineTest.Handle == "244")
                     {
                         int aaa = 0;
 
@@ -865,6 +865,31 @@ namespace vector_control_system_api.Services.Analysis
             return arcs;
         }
 
+        private bool LinesInclude(double Ax1, double Ax2, double Ay1,double Ay2,double Az1, double Az2, double Bx1, double Bx2, double By1, double By2, double Bz1, double Bz2)
+        {
+
+            return false;
+        }
+
+        private bool DoesInclude(double a, double b, double c)
+        {
+            // a and b range
+            /*
+            if(c is >= a and <= b)
+            {
+                return true;
+            }*/
+            return false;
+        }
+        private List<double> Union(List<double> values)
+        {
+            List<double> union = new List<double>();
+            values.Sort();
+            union.Add(values.FirstOrDefault());
+            union.Add(values.LastOrDefault());
+            union.Sort();
+            return union;
+        }
         private async Task CalculateCorrectnessScore(ProjectData testProject)
         {
             //int setId = testProject.ProjectSetId;
@@ -895,7 +920,9 @@ namespace vector_control_system_api.Services.Analysis
             //double scoreCorrectness = ((matchesLine.Count * 2 + matchesArc.Count * 2) / (testLines.Count + originalLines.Count + testArcs.Count + originalArcs.Count));
 
             testProject.ScoreCorrectness = scoreCorrectness;
-
+            testProject.OffsetX = offset.X;
+            testProject.OffsetY = offset.Y;
+            testProject.OffsetZ = offset.Z;
             _databaseContext.Entry(testProject).State = EntityState.Modified;
             await _databaseContext.SaveChangesAsync();
         }
