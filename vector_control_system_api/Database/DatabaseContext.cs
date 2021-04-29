@@ -126,7 +126,7 @@ namespace vector_control_system_api.Database
 
                 entity.Property(e => e.DateCreated)
                     .HasColumnName("date_created")
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .IsRequired();
 
                 entity.Property(e => e.Status).HasColumnName("status").IsRequired();
@@ -137,12 +137,12 @@ namespace vector_control_system_api.Database
 
                 entity.Property(e => e.DateUploaded)
                     .HasColumnName("date_uploaded")
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .IsRequired();
 
                 entity.Property(e => e.DateUpdated)
                     .HasColumnName("date_updated")
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .IsRequired();
 
                 entity.Property(e => e.StateId).HasColumnName("state_id");

@@ -55,6 +55,7 @@ namespace vector_control_system_api.Controllers
         [HttpGet("LinesMissing")]
         public async Task<ActionResult<IEnumerable<Line>>> GetLinesMissing(int id)
         {
+            //this project
             var project = _context.ProjectData
                 .Where(x => x.Id == id)
                 .FirstOrDefault();
@@ -66,7 +67,7 @@ namespace vector_control_system_api.Controllers
             var linesTest = _context.Line
                 .Where(x => x.ProjectId == id)
                 .ToList();
-
+            /*
             var items = (from x in linesOriginal
                          join y in linesTest
                          on new
@@ -75,7 +76,7 @@ namespace vector_control_system_api.Controllers
                          { y.DX, y.DY, y.DZ, y.Magnitude }
                          select x)
                 .ToList();
-
+            */
             var items2 = linesOriginal
                 .Where(x => linesTest
                 .All(y => y.DX != x.DX && y.DY != x.DY && y.DZ != x.DZ && y.Magnitude != x.Magnitude))
