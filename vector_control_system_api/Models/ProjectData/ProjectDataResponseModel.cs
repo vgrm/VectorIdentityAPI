@@ -24,8 +24,9 @@ namespace vector_control_system_api.Models.ProjectData
         public DateTime DateUpdated { get; set; }
 
         public int OwnerId { get; set; }
+        public Database.User Owner { get; set; }
         public int ProjectSetId { get; set; }
-
+        public Database.ProjectSet ProjectSet { get; set; }
         //public ICollection<Line> Lines { get; set; }
         //public ICollection<Arc> Arcs { get; set; }
     }

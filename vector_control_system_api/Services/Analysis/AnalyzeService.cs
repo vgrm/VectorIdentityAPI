@@ -368,11 +368,11 @@ namespace vector_control_system_api.Services.Analysis
             bool minimizedLines = false;
             bool minimizedArcs = false;
             //for now filter only main lines
-            //List<Line> lines = linesAll.Where(x => x.Layer == "Pagrindinis").ToList();
-            //List<Arc> arcs = arcsAll.Where(x => x.Layer == "Pagrindinis").ToList();
+            List<Line> lines = linesAll.Where(x => x.Layer == "Pagrindinis").ToList();
+            List<Arc> arcs = arcsAll.Where(x => x.Layer == "Pagrindinis").ToList();
 
-            List<Line> lines = linesAll.ToList();
-            List<Arc> arcs = arcsAll.ToList();
+            //List<Line> lines = linesAll.ToList();
+            //List<Arc> arcs = arcsAll.ToList();
 
             while (!minimizedLines)
             {

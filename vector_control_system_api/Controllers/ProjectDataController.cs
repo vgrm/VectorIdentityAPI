@@ -39,9 +39,39 @@ namespace vector_control_system_api.Controllers
         {
             if (id != null)
             {
+                /*
                 var projects = _context.ProjectData
                     .Where(project => project.ProjectSetId == id)
                     .ToList();
+                return Ok(projects);
+                */
+                var projects = _context.ProjectData
+                    .Where(project => project.ProjectSetId == id)
+                    .Include(x => x.Owner)
+                    .Include(x => x.ProjectSet)
+                    .ToList()
+                    .Select(project => new ProjectDataResponseModel
+                    {
+                        Id = project.Id,
+                        Name = project.Name,
+                        FileType = project.FileType,
+                        FileData = project.FileData,
+                        DateCreated = project.DateCreated,
+
+                        Status = project.Status,
+                        Original = project.Original,
+                        ScoreIdentity = project.ScoreIdentity,
+                        ScoreCorrectness = project.ScoreCorrectness,
+
+                        DateUploaded = project.DateUploaded,
+                        DateUpdated = project.DateUpdated,
+
+                        OwnerId = project.OwnerId,
+                        Owner = project.Owner,
+                        ProjectSetId = project.ProjectSetId,
+                        ProjectSet = project.ProjectSet
+                    }
+                    );
                 return Ok(projects);
             }
             return Ok();
@@ -68,15 +98,18 @@ namespace vector_control_system_api.Controllers
             {
                 return BadRequest();
             }
+            /*
             var projects = _context.ProjectData
                 .Where(x => x.OwnerId == user.Id)
                 .ToList();
+            */
 
-            /*
             var projects = _context.ProjectData
-                .Where(x=>x.OwnerId == user.Id)
+                .Where(x => x.OwnerId == user.Id)
+                .Include(x => x.Owner)
+                .Include(x => x.ProjectSet)
                 .ToList()
-                .Select( x=> new ProjectDataResponseModel
+                .Select(project => new ProjectDataResponseModel
                 {
                     Id = project.Id,
                     Name = project.Name,
@@ -93,10 +126,12 @@ namespace vector_control_system_api.Controllers
                     DateUpdated = project.DateUpdated,
 
                     OwnerId = project.OwnerId,
+                    Owner = project.Owner,
                     ProjectSetId = project.ProjectSetId,
+                    ProjectSet = project.ProjectSet
                 }
                 );
-            */
+
             if (projects == null)
             {
                 return BadRequest();
@@ -134,9 +169,9 @@ namespace vector_control_system_api.Controllers
         [Authorize]
         public async Task<ActionResult<ProjectData>> GetProjectData(int id)
         {
-            var project = await _context.ProjectData.Include(p => p.Lines).FirstOrDefaultAsync(p => p.Id == id);
+            var project = await _context.ProjectData.Include(x => x.Owner).Include(x => x.ProjectSet).FirstOrDefaultAsync(p => p.Id == id);
 
-            if(project == null)
+            if (project == null)
             {
                 return BadRequest();
             }
@@ -159,8 +194,9 @@ namespace vector_control_system_api.Controllers
                 DateUpdated = project.DateUpdated,
 
                 OwnerId = project.OwnerId,
+                Owner = project.Owner,
                 ProjectSetId = project.ProjectSetId,
-
+                ProjectSet = project.ProjectSet
                 //Lines = project.Lines,
                 //Arcs = null
             };
@@ -184,7 +220,7 @@ namespace vector_control_system_api.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutProjectData(int id,ProjectData projectData)
+        public async Task<IActionResult> PutProjectData(int id, ProjectData projectData)
         {
 
             //check if valid project
@@ -227,7 +263,7 @@ namespace vector_control_system_api.Controllers
                 projectData.Status = "Accepted";
             }
 
-
+            projectData.StateId = -1;
             _context.Entry(projectData).State = EntityState.Modified;
 
             //save changes
@@ -409,14 +445,14 @@ namespace vector_control_system_api.Controllers
                 return BadRequest();
             }
 
-            if(model.Command == "ChangeOriginal")
+            if (model.Command == "ChangeOriginal")
             {
 
                 var projects = _context.ProjectData
                     .Where(project => project.ProjectSetId == projectData.ProjectSetId)
                     .ToList();
 
-                foreach(var project in projects)
+                foreach (var project in projects)
                 {
                     project.Original = false;
                 }

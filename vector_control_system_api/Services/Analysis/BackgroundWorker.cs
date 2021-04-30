@@ -53,7 +53,7 @@ namespace vector_control_system_api.Services.Analysis
 
                     if (projectData == null) continue;
 
-                    _logger.LogInformation("Book found! Starting to process ..");
+                    _logger.LogInformation("Project found! Starting to process ..");
 
                     using (var scope = _scopeFactory.CreateScope())
                     {
@@ -64,7 +64,7 @@ namespace vector_control_system_api.Services.Analysis
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogCritical("An error occurred when publishing a book. Exception: {@Exception}", ex);
+                    _logger.LogCritical("An error occurred when analyzing a project. Exception: {@Exception}", ex);
                 }
             }
         }
