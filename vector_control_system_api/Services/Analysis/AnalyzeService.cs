@@ -23,6 +23,11 @@ namespace vector_control_system_api.Services.Analysis
             _logger = logger;
         }
 
+        public AnalyzeService()
+        {
+
+        }
+
         public async Task Analyze(ProjectData projectData, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Doing heavy analyzer logic ...");
@@ -69,7 +74,7 @@ namespace vector_control_system_api.Services.Analysis
 
         }
 
-        private async Task UpdateData(ProjectData projectData)
+        public async Task UpdateData(ProjectData projectData)
         {
             _databaseContext.Line.RemoveRange(_databaseContext.Line.Where(x => x.ProjectId == projectData.Id));
             _databaseContext.Arc.RemoveRange(_databaseContext.Arc.Where(x => x.ProjectId == projectData.Id));
@@ -88,6 +93,7 @@ namespace vector_control_system_api.Services.Analysis
             int iEntities = 0; for (int i = 0; i < D.Length; i++) { if (D[i] == "ENTITIES") { iEntities = i; break; } }
             for (int i = iEntities; i < D.Length; i++)
             {
+                /* POINT CALCULATIONS FUTURE IMPLEMENTATION
                 if (D[i] == "POINT" || D[i] == "AcDbPoint")
                 {
                     int iEntity = i; if (D[i].StartsWith("AcDb")) { for (iEntity = i; D[iEntity] != "AcDbEntity"; iEntity--) ; }
@@ -97,14 +103,10 @@ namespace vector_control_system_api.Services.Analysis
                         if (D[iWaarden] == " 10" && D[iWaarden + 2] == " 20")
                         {
                             //Here you can store the following data in a list for later use
-                            //LayerName = Layer
-                            //X = D[iWaarden + 1]
-                            //Y = D[iWaarden + 3]
-                            //Z = D[iWaarden + 5]
                         }
                     }
                 }
-
+                */
                 //Line
                 if (D[i] == "LINE")
                 {
@@ -128,11 +130,6 @@ namespace vector_control_system_api.Services.Analysis
 
                     for (iEntity = i; D[iEntity] != "AcDbEntity" && iEntity < i + 100; iEntity++) ;
                     for (iLine = i; D[iLine] != "AcDbLine" && iLine < i + 100; iLine++) ;
-
-
-                    //find LINE index
-                    //int iLine = i;
-                    //for (iLine = i; D[iLine] != "LINE" && iLine < i + 100; iLine++) ;
 
                     //find layer name
                     Layer = "";
@@ -168,12 +165,6 @@ namespace vector_control_system_api.Services.Analysis
                             double tempZ2 = Convert.ToDouble(D[ii + 11]);
 
                             //lower accuracy to minimize all the floating points
-                            //X1 = Convert.ToDouble(D[ii + 1].PadRight(17, '0').Substring(0, D[ii + 1].Length - 2));
-                            //Y1 = Convert.ToDouble(D[ii + 3].PadRight(17, '0').Substring(0, D[ii + 3].Length - 2));
-                            //Z1 = Convert.ToDouble(D[ii + 5].PadRight(17, '0').Substring(0, D[ii + 5].Length - 2));
-                            //X2 = Convert.ToDouble(D[ii + 7].PadRight(17, '0').Substring(0, D[ii + 7].Length - 2));
-                            //Y2 = Convert.ToDouble(D[ii + 9].PadRight(17, '0').Substring(0, D[ii + 9].Length - 2));
-                            //Z2 = Convert.ToDouble(D[ii + 11].PadRight(17, '0').Substring(0, D[ii + 11].Length - 2));
                             X1 = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate(tempX1 * number) / number));
                             Y1 = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate(tempY1 * number) / number));
                             Z1 = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate(tempZ1 * number) / number));
@@ -195,21 +186,6 @@ namespace vector_control_system_api.Services.Analysis
                             DX = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate(DX * number) / number));
                             DY = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate(DY * number) / number));
                             DZ = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate(DZ * number) / number));
-
-                            //DX = Convert.ToDouble(DX.ToString("0.##############"));
-                            //DY = Convert.ToDouble(DY.ToString("0.##############"));
-                            //DZ = Convert.ToDouble(DZ.ToString("0.##############"));
-                            /*
-                            if (DX>0)DX = Convert.ToDouble(DX.ToString().PadRight(20, '0').Substring(0, 16));
-                            else DX = Convert.ToDouble(DX.ToString().PadRight(20, '0').Substring(0, 17));
-
-                            if (DY > 0) DX = Convert.ToDouble(DY.ToString().PadRight(20, '0').Substring(0, 16));
-                            else DY = Convert.ToDouble(DY.ToString().PadRight(20, '0').Substring(0, 17));
-
-                            if (DZ > 0) DX = Convert.ToDouble(DZ.ToString().PadRight(20, '0').Substring(0, 16));
-                            else DZ = Convert.ToDouble(DZ.ToString().PadRight(20, '0').Substring(0, 17));
-                            */
-                            // _logger.LogInformation("VECTOR: {v1} {v2} {v3}", V1, V2, V3);
 
                             Line newLine = new Line
                             {
@@ -362,8 +338,25 @@ namespace vector_control_system_api.Services.Analysis
 
         }
 
+        public double CalculateDistance(double x1,double x2)
+        {
+            double V1 = x1 - x2;
+            return Math.Abs(V1);
+        }
 
-        private async Task MinimizeData(List<Line> linesAll, List<Arc> arcsAll)
+        public double CalculateMagnitude(double V1, double V2, double V3)
+        {
+            double Magnitude = Math.Sqrt(Math.Pow(V1, 2) + Math.Pow(V2, 2) + Math.Pow(V3, 2));
+            return Magnitude;
+        }
+
+        public double CalculateDirection(double V1, double Magnitude)
+        {
+            double DX = V1 / Magnitude;
+            return DX;
+        }
+
+        public async Task MinimizeData(List<Line> linesAll, List<Arc> arcsAll)
         {
             bool minimizedLines = false;
             bool minimizedArcs = false;
@@ -396,7 +389,7 @@ namespace vector_control_system_api.Services.Analysis
             await _databaseContext.SaveChangesAsync();
         }
 
-        private List<Arc> MinimizeArcs(List<Arc> arcs)
+        public List<Arc> MinimizeArcs(List<Arc> arcs)
         {
             Arc arc1 = new Arc();
             Arc arc2 = new Arc();
@@ -452,7 +445,7 @@ namespace vector_control_system_api.Services.Analysis
             return arcs;
         }
 
-        private bool ArcsSameCircle(Arc arc1, Arc arc2)
+        public bool ArcsSameCircle(Arc arc1, Arc arc2)
         {
             //find arcs with same R coords and plane
             if (arc1.DX - arc2.DX is >= min and <= max &&
@@ -467,7 +460,7 @@ namespace vector_control_system_api.Services.Analysis
             }
                 return false;
         }
-        private bool ArcsInclude(double aStart, double aEnd, double bStart, double bEnd)
+        public bool ArcsInclude(double aStart, double aEnd, double bStart, double bEnd)
         {
             if (ArcCase1(aStart, aEnd, bStart, bEnd))
             {
@@ -510,7 +503,7 @@ namespace vector_control_system_api.Services.Analysis
             return false;
 
         }
-        private List<double> NewAngles(double aStart, double aEnd, double bStart, double bEnd)
+        public List<double> NewAngles(double aStart, double aEnd, double bStart, double bEnd)
         {
             List<double> start = Union(new List<double> { aStart, bStart });
             List<double> end = Union(new List<double> { aEnd, bEnd });
@@ -539,7 +532,7 @@ namespace vector_control_system_api.Services.Analysis
             return newAngles;
         }
 
-        private bool ArcCase1(double aStart, double aEnd, double bStart, double bEnd)
+        public bool ArcCase1(double aStart, double aEnd, double bStart, double bEnd)
         {
             bool pairA = false;
             bool pairB = false;
@@ -552,7 +545,7 @@ namespace vector_control_system_api.Services.Analysis
             return false;
         }
 
-        private bool ArcCase2(double aStart, double aEnd, double bStart, double bEnd)
+        public bool ArcCase2(double aStart, double aEnd, double bStart, double bEnd)
         {
             bool pairA = false;
             bool pairB = false;
@@ -565,7 +558,7 @@ namespace vector_control_system_api.Services.Analysis
             return false;
         }
 
-        private bool ArcCase3(double aStart, double aEnd, double bStart, double bEnd)
+        public bool ArcCase3(double aStart, double aEnd, double bStart, double bEnd)
         {
             bool pairA = false;
             bool pairB = false;
@@ -578,7 +571,7 @@ namespace vector_control_system_api.Services.Analysis
             return false;
         }
 
-        private bool ArcCase4(double aStart, double aEnd, double bStart, double bEnd)
+        public bool ArcCase4(double aStart, double aEnd, double bStart, double bEnd)
         {
             bool pairA = false;
             bool pairB = false;
@@ -591,7 +584,7 @@ namespace vector_control_system_api.Services.Analysis
             return false;
         }
 
-        private List<Line> MinimizeLines(List<Line> lines)
+        public List<Line> MinimizeLines(List<Line> lines)
         {
             Line line1 = new Line();
             Line line2 = new Line();
@@ -671,7 +664,7 @@ namespace vector_control_system_api.Services.Analysis
             }
             return lines;
         }
-        private bool LinesInclude(double aX1, double aX2, double aY1, double aY2, double aZ1, double aZ2, double bX1, double bX2, double bY1, double bY2, double bZ1, double bZ2)
+        public bool LinesInclude(double aX1, double aX2, double aY1, double aY2, double aZ1, double aZ2, double bX1, double bX2, double bY1, double bY2, double bZ1, double bZ2)
         {
             if (DoesInclude(aX1, aX2, bX1) && DoesInclude(aY1, aY2, bY1) && DoesInclude(aZ1, aZ2, bZ1))
             {
@@ -683,7 +676,7 @@ namespace vector_control_system_api.Services.Analysis
             }
             return false;
         }
-        private bool LinesSameDirection(Line line1, Line line2)
+        public bool LinesSameDirection(Line line1, Line line2)
         {
             if ((line1.DX - line2.DX is >= min and <= max &&
                     line1.DY - line2.DY is >= min and <= max &&
@@ -697,7 +690,7 @@ namespace vector_control_system_api.Services.Analysis
             }
                 return false;
         }
-        private bool DoesInclude(double a, double b, double c)
+        public bool DoesInclude(double a, double b, double c)
         {
             // a and b range
             if ((a <= c && c <= b) ||
@@ -707,7 +700,7 @@ namespace vector_control_system_api.Services.Analysis
             }
             return false;
         }
-        private List<double> Union(List<double> values)
+        public List<double> Union(List<double> values)
         {
             List<double> union = new List<double>();
             values.Sort();
@@ -716,7 +709,7 @@ namespace vector_control_system_api.Services.Analysis
             union.Sort();
             return union;
         }
-        private async Task CalculateCorrectnessScore(ProjectData testProject)
+        public async Task CalculateCorrectnessScore(ProjectData testProject)
         {
             //int setId = testProject.ProjectSetId;
             ProjectData originalProject = _databaseContext.ProjectData.Where(x => x.ProjectSetId == testProject.ProjectSetId && x.Original && x.Id != testProject.Id).FirstOrDefault();
@@ -751,7 +744,7 @@ namespace vector_control_system_api.Services.Analysis
             await _databaseContext.SaveChangesAsync();
         }
 
-        private Offset FindOffset(List<Line> originalLines, List<Line> testLines, List<Arc> originalArcs, List<Arc> testArcs)
+        public Offset FindOffset(List<Line> originalLines, List<Line> testLines, List<Arc> originalArcs, List<Arc> testArcs)
         {
             List<Offset> offsetLines = FindOffsetLines(originalLines, testLines);
             List<Offset> offsetArcs = FindOffsetArcs(originalArcs, testArcs);
@@ -761,7 +754,7 @@ namespace vector_control_system_api.Services.Analysis
             return offset;
         }
 
-        private List<Offset> FindOffsetLines(List<Line> originalLines, List<Line> testLines)
+        public List<Offset> FindOffsetLines(List<Line> originalLines, List<Line> testLines)
         {
             List<Offset> offsetLines = new List<Offset>();
 
@@ -792,7 +785,7 @@ testLine.DZ - originalLine.DZ is >= min and <= max)
             return offsetLines;
         }
 
-        private List<Offset> FindOffsetArcs(List<Arc> originalArcs, List<Arc> testArcs)
+        public List<Offset> FindOffsetArcs(List<Arc> originalArcs, List<Arc> testArcs)
         {
             List<Offset> offsetArcs = new List<Offset>();
 
@@ -804,9 +797,9 @@ testLine.DZ - originalLine.DZ is >= min and <= max)
                        originalArc.DX == testArc.DX &&
                        originalArc.DY == testArc.DY &&
                        originalArc.DZ == testArc.DZ &&
-                       originalArc.X == testArc.X &&
-                       originalArc.Y == testArc.Y &&
-                       originalArc.Z == testArc.Z &&
+                       //originalArc.X == testArc.X &&
+                       //originalArc.Y == testArc.Y &&
+                       //originalArc.Z == testArc.Z &&
                        originalArc.AngleStart == testArc.AngleStart &&
                        originalArc.AngleEnd == testArc.AngleEnd)
                     {
@@ -821,7 +814,7 @@ testLine.DZ - originalLine.DZ is >= min and <= max)
             return offsetArcs;
         }
 
-        private Offset FindCommonOffset(List<Offset> offsetLines, List<Offset> offsetArcs)
+        public Offset FindCommonOffset(List<Offset> offsetLines, List<Offset> offsetArcs)
         {
             Offset offset = new Offset();
             List<Offset> offsetList = new List<Offset>();
@@ -852,7 +845,7 @@ testLine.DZ - originalLine.DZ is >= min and <= max)
 
             return offset;
         }
-        private List<ProjectMatchModel> FindMatchingLines(Offset offset, List<Line> originalLines, List<Line> testLines, int originalProjectId, int testProjectId)
+        public List<ProjectMatchModel> FindMatchingLines(Offset offset, List<Line> originalLines, List<Line> testLines, int originalProjectId, int testProjectId)
         {
             List<ProjectMatchModel> matches = new List<ProjectMatchModel>();
 
@@ -924,7 +917,7 @@ testLine.DZ - originalLine.DZ is >= min and <= max)
             return matches;
         }
 
-        private List<ProjectMatchModel> FindMatchingArcs(Offset offset, List<Arc> originalArcs, List<Arc> testArcs, int originalProjectId, int testProjectId)
+        public List<ProjectMatchModel> FindMatchingArcs(Offset offset, List<Arc> originalArcs, List<Arc> testArcs, int originalProjectId, int testProjectId)
         {
             List<ProjectMatchModel> matches = new List<ProjectMatchModel>();
 
@@ -967,7 +960,7 @@ testLine.DZ - originalLine.DZ is >= min and <= max)
             return matches;
         }
 
-        private async Task CalculateIdentityScore(ProjectData projectData)
+        public async Task CalculateIdentityScore(ProjectData projectData)
         {
             List<ProjectData> projects = _databaseContext.ProjectData.Where(x => x.ProjectSetId == projectData.ProjectSetId && !x.Original && x.Id != projectData.Id).ToList();
             if (projects == null) return;
