@@ -37,7 +37,6 @@ namespace vector_control_system_api.Controllers
 
             int id = int.Parse(userId.Value);
             var user = _context.User.Find(id);
-            //var user =  _context.User.FindAsync(id);
 
             if (user == null)
             {
@@ -79,7 +78,6 @@ namespace vector_control_system_api.Controllers
 
             int id = int.Parse(userId.Value);
             var user = _context.User.Find(id);
-            //var user =  _context.User.FindAsync(id);
 
             if (user == null)
             {
@@ -110,7 +108,6 @@ namespace vector_control_system_api.Controllers
         // GET: api/ProjectSet
         [HttpGet]
         [Authorize(Policy = "Admin")]
-        //public async Task<ActionResult<IEnumerable<ProjectSet>>> GetProjectSet()
         public IActionResult GetProjectSet()
         {
 
@@ -204,7 +201,6 @@ namespace vector_control_system_api.Controllers
             int stateId = -3;
             int.TryParse(projectSet.Status, out stateId);
             projectSet.StateId = stateId;
-            //var user =  _context.User.FindAsync(id);
 
             if (user == null || user.Id != projectSet.OwnerId)
             {
@@ -287,8 +283,6 @@ namespace vector_control_system_api.Controllers
 
             int userId = int.Parse(userClaim.Value);
             var user = _context.User.Find(userId);
-
-            //var user =  _context.User.FindAsync(id);
 
             if (user == null || user.Id != projectSet.OwnerId)
             {

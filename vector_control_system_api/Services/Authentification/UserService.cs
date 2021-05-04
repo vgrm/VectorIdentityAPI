@@ -14,8 +14,6 @@ namespace vector_control_system_api.Services.Authentification
 {
     public class UserService : IUserService
     {
-        //private readonly IUnitOfWork _unitOfWork;
-        //private readonly IRepository<UserData> _userRepository;
         private readonly IConfiguration _configuration;
         private readonly ICryptographicService _cryptographicService;
         private readonly DatabaseContext _databaseContext;
@@ -33,10 +31,6 @@ namespace vector_control_system_api.Services.Authentification
             {
                 throw new UsernameOrPasswordInvalidException();
             }
-
-            //var user1 = await _userRepository.Get(data => data.Username == username);
-
-            //var comparisonData = await _databaseContext.User.FindAsync();
 
             var user = _databaseContext.User
                 .Include(x => x.Role)
@@ -67,8 +61,6 @@ namespace vector_control_system_api.Services.Authentification
                 throw new UsernameOrPasswordInvalidException();
             }
 
-            //var user = await _userRepository.Get(data => data.Username == username);
-
             var user = _databaseContext.User
                 .Include(x => x.Role)
                 .Where(x => x.Username == username)
@@ -77,8 +69,6 @@ namespace vector_control_system_api.Services.Authentification
             var role = _databaseContext.UserRole
                 .Where(x => x.Name == "User")
                 .FirstOrDefault();
-
-            //var singleUser = user?.FirstOrDefault();
 
             if (user != null)
             {
@@ -97,12 +87,6 @@ namespace vector_control_system_api.Services.Authentification
             };
             _databaseContext.Add(userData);
             await _databaseContext.SaveChangesAsync();
-
-            //await _userRepository.Create(userData);
-            //await _unitOfWork.Save();
-
-            //var createdUsers = await _userRepository.Get(userEntity => userEntity.Username == username);
-            //var createdUser = createdUsers?.FirstOrDefault();
 
             var userCreated = _databaseContext.User
                .Include(x => x.Role)

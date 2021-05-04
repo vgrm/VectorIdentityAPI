@@ -56,8 +56,6 @@ namespace vector_control_system_api.Controllers
                 .Where(x => x.Username == username)
                 .FirstOrDefaultAsync();
 
-            //var user = await _context.User.FindAsync(id);
-
             if (user == null)
             {
                 return BadRequest();
@@ -151,8 +149,6 @@ namespace vector_control_system_api.Controllers
                 };
 
                 return Ok(userModel);
-
-                //return Ok(tokenModel);
             }
             catch (UsernameTakenException)
             {

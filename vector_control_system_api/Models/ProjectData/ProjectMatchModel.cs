@@ -22,13 +22,5 @@ namespace vector_control_system_api.Models.ProjectData
         //matching arcs
         public int ArcOriginalId { get; set; }
         public int ArcTestId { get; set; }
-
-        //projects
-        //public int OriginalProjectId { get; set; }
-        //[JsonIgnore] public ProjectData OriginalProject { get; set; }
-
-
-        //public int TestProjectId { get; set; }
-        //[JsonIgnore] public ProjectData TestProject { get; set; }
     }
 }

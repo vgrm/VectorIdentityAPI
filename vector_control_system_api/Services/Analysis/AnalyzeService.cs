@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using vector_control_system_api.Database;
 using Microsoft.EntityFrameworkCore;
 using vector_control_system_api.Models.ProjectData;
+using System.Diagnostics;
 
 namespace vector_control_system_api.Services.Analysis
 {
@@ -31,6 +32,12 @@ namespace vector_control_system_api.Services.Analysis
         public async Task Analyze(ProjectData projectData, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Doing heavy analyzer logic ...");
+            
+            // Create new stopwatch.
+            Stopwatch stopwatch = new Stopwatch();
+
+            // Begin timing.
+            stopwatch.Start();
 
             if (projectData.Status == "Accepted" || projectData.Status == "New"
                 || projectData.Status == "Evaluated"
@@ -69,7 +76,11 @@ namespace vector_control_system_api.Services.Analysis
             await _databaseContext.SaveChangesAsync();
 
             await Task.Delay(250, cancellationToken);
-            _logger.LogInformation("\"{Name} by {Owner}\" has been published!", projectData.Name, projectData.OwnerId);
+            // Stop timing.
+            stopwatch.Stop();
+
+            // Write result.
+            _logger.LogInformation("\"{Name} by {Owner}\" has been published! Time elapsed: {time}", projectData.Name, projectData.OwnerId, stopwatch.Elapsed);
 
 
         }
@@ -181,8 +192,6 @@ namespace vector_control_system_api.Services.Analysis
                             DY = V2 / Magnitude;
                             DZ = V3 / Magnitude;
 
-                            //string.format(new FormatProvider(), "{0:T(1)0,000.0", 1000.9999); // 1,000.9
-
                             DX = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate(DX * number) / number));
                             DY = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate(DY * number) / number));
                             DZ = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate(DZ * number) / number));
@@ -238,8 +247,6 @@ namespace vector_control_system_api.Services.Analysis
                     {
                         for (iArc = i; D[iArc] != "AcDbArc" && iArc < i + 100; iArc++) ;
                     }
-                    //int iEntity = i; if (D[i].StartsWith("AcDb")) { for (iEntity = i; D[iEntity] != "AcDbEntity"; iEntity--) ; }
-                    //Layer = ""; for (int iLayer = iEntity; iLayer < i + 10 && Layer == ""; iLayer++) { if (D[iLayer] == "  8") { Layer = D[iLayer + 1]; }; }
 
                     //find layer name
                     Layer = "";
@@ -248,10 +255,8 @@ namespace vector_control_system_api.Services.Analysis
                         if (D[iLayer] == "  8")
                         {
                             Layer = D[iLayer + 1];
-                            //_logger.LogInformation("\"{0} entity {1}\" logged \n LayerName:{Layer}\n D[iLayer]:{D}", i, iEntity, Layer, D[iLayer]);
                         }
                     }
-                    //_logger.LogInformation("\"{0} entity {1}\" logged \n LayerName:{Layer}\n D[iLayer]:{D}", i, iEntity, Layer, D[iEntity+1]);
 
                     //find handle id
                     Handle = "";
@@ -272,11 +277,6 @@ namespace vector_control_system_api.Services.Analysis
                             Y = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate((Convert.ToDouble(D[ii + 3]) * number)) / number));
                             Z = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate((Convert.ToDouble(D[ii + 5]) * number)) / number));
                             Radius = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate((Convert.ToDouble(D[ii + 7]) * number)) / number));
-
-                            //X = Convert.ToDouble(D[ii + 1]);
-                            //Y = Convert.ToDouble(D[ii + 3]);
-                            //Z = Convert.ToDouble(D[ii + 5]);
-                            //Radius = Convert.ToDouble(D[ii + 7]);
                         }
 
                         if (D[ii + 8] == "210" && D[ii + 10] == "220" && D[ii + 12] == "230")
@@ -286,10 +286,6 @@ namespace vector_control_system_api.Services.Analysis
                             DY = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate((Convert.ToDouble(D[ii + 11]) * number)) / number));
                             DZ = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate((Convert.ToDouble(D[ii + 13]) * number)) / number));
                             Radius = Convert.ToDouble(string.Format("{0:0.############}", Math.Truncate((Convert.ToDouble(D[ii + 7]) * number)) / number));
-                            //DX = Convert.ToDouble(D[ii + 9]);
-                            //DY = Convert.ToDouble(D[ii + 10]);
-                            //DZ = Convert.ToDouble(D[ii + 11]);
-                            //Radius = Convert.ToDouble(D[ii + 7]);
                         }
                     }
 
@@ -327,12 +323,6 @@ namespace vector_control_system_api.Services.Analysis
                 }
             }
 
-
-
-            //string s = System.Text.Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-
-            //projectData.FileData;
-
             await MinimizeData(lines, arcs);
 
 
@@ -363,9 +353,6 @@ namespace vector_control_system_api.Services.Analysis
             //for now filter only main lines
             List<Line> lines = linesAll.Where(x => x.Layer == "Pagrindinis").ToList();
             List<Arc> arcs = arcsAll.Where(x => x.Layer == "Pagrindinis").ToList();
-
-            //List<Line> lines = linesAll.ToList();
-            //List<Arc> arcs = arcsAll.ToList();
 
             while (!minimizedLines)
             {
@@ -711,11 +698,8 @@ namespace vector_control_system_api.Services.Analysis
         }
         public async Task CalculateCorrectnessScore(ProjectData testProject)
         {
-            //int setId = testProject.ProjectSetId;
             ProjectData originalProject = _databaseContext.ProjectData.Where(x => x.ProjectSetId == testProject.ProjectSetId && x.Original && x.Id != testProject.Id).FirstOrDefault();
             if (originalProject == null) return;
-
-            //_databaseContext.Match.RemoveRange(_databaseContext.Match.Where(x => x.TestProjectId == testProject.Id));
 
             List<ProjectMatchModel> matchesLine = new List<ProjectMatchModel>();
             List<ProjectMatchModel> matchesArc = new List<ProjectMatchModel>();
@@ -797,9 +781,6 @@ testLine.DZ - originalLine.DZ is >= min and <= max)
                        originalArc.DX == testArc.DX &&
                        originalArc.DY == testArc.DY &&
                        originalArc.DZ == testArc.DZ &&
-                       //originalArc.X == testArc.X &&
-                       //originalArc.Y == testArc.Y &&
-                       //originalArc.Z == testArc.Z &&
                        originalArc.AngleStart == testArc.AngleStart &&
                        originalArc.AngleEnd == testArc.AngleEnd)
                     {
@@ -853,30 +834,6 @@ testLine.DZ - originalLine.DZ is >= min and <= max)
             {
                 foreach (var testLine in testLines)
                 {
-                    if (testLine.Handle == "245")
-                    {
-                        int x = 0;
-                        double a = originalLine.X1 - testLine.X1 + offset.X;
-                        double b = originalLine.X1;
-                        double c = testLine.X1 - offset.X;
-
-                        double VALUE_1 = originalLine.Magnitude - testLine.Magnitude;
-                        double VALUE_2 = originalLine.DX - testLine.DX;
-                        double VALUE_3 = originalLine.DY - testLine.DY;
-                        double VALUE_4 = originalLine.DZ - testLine.DZ;
-                        double VALUE_5 = originalLine.X1 - testLine.X1 - offset.X;
-                        double VALUE_6 = originalLine.Y1 - testLine.Y1 - offset.Y;
-                        double VALUE_7 = originalLine.Z1 - testLine.Z1 - offset.Z;
-
-                        double VALUE2_1 = testLine.Magnitude - originalLine.Magnitude;
-                        double VALUE2_2 = testLine.DX - originalLine.DX;
-                        double VALUE2_3 = testLine.DY - originalLine.DY;
-                        double VALUE2_4 = testLine.DZ - originalLine.DZ;
-                        double VALUE2_5 = testLine.X1 - originalLine.X1 - offset.X;
-                        double VALUE2_6 = testLine.Y1 - originalLine.Y1 - offset.Y;
-                        double VALUE2_7 = testLine.Z1 - originalLine.Z1 - offset.Z;
-                    }
-
                     if (
                     (originalLine.Magnitude - testLine.Magnitude is >= min and <= max &&
                     originalLine.DX - testLine.DX is >= min and <= max &&
@@ -1000,7 +957,6 @@ testLine.DZ - originalLine.DZ is >= min and <= max)
 
             projectData.ScoreIdentity = scoreIdentity;
             _databaseContext.Entry(projectData).State = EntityState.Modified;
-            //_databaseContext.Match.AddRange(matchesLine);
             await _databaseContext.SaveChangesAsync();
         }
     }

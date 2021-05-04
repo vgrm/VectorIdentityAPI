@@ -39,12 +39,6 @@ namespace vector_control_system_api.Controllers
         {
             if (id != null)
             {
-                /*
-                var projects = _context.ProjectData
-                    .Where(project => project.ProjectSetId == id)
-                    .ToList();
-                return Ok(projects);
-                */
                 var projects = _context.ProjectData
                     .Where(project => project.ProjectSetId == id)
                     .Include(x => x.Owner)
@@ -75,7 +69,6 @@ namespace vector_control_system_api.Controllers
                 return Ok(projects);
             }
             return Ok();
-            //return await _context.ProjectData.ToListAsync();
         }
 
         // GET: api/ProjectData/user
@@ -89,7 +82,6 @@ namespace vector_control_system_api.Controllers
                 return BadRequest();
             }
 
-            //int userId = int.Parse(userClaim.Value);
             var user = await _context.User
                 .Where(x => x.Username == id)
                 .FirstOrDefaultAsync();
@@ -98,11 +90,6 @@ namespace vector_control_system_api.Controllers
             {
                 return BadRequest();
             }
-            /*
-            var projects = _context.ProjectData
-                .Where(x => x.OwnerId == user.Id)
-                .ToList();
-            */
 
             var projects = _context.ProjectData
                 .Where(x => x.OwnerId == user.Id)
@@ -136,31 +123,6 @@ namespace vector_control_system_api.Controllers
             {
                 return BadRequest();
             }
-            /*
-            var customProject = new ProjectDataResponseModel
-            {
-                Id = project.Id,
-
-                Name = project.Name,
-                FileType = project.FileType,
-                FileData = project.FileData,
-                DateCreated = project.DateCreated,
-
-                Status = project.Status,
-                Original = project.Original,
-                ScoreIdentity = project.ScoreIdentity,
-                ScoreCorrectness = project.ScoreCorrectness,
-
-                DateUploaded = project.DateUploaded,
-                DateUpdated = project.DateUpdated,
-
-                OwnerId = project.OwnerId,
-                ProjectSetId = project.ProjectSetId,
-
-                //Lines = project.Lines,
-                //Arcs = null
-            };
-            */
             return Ok(projects);
         }
 
@@ -197,21 +159,7 @@ namespace vector_control_system_api.Controllers
                 Owner = project.Owner,
                 ProjectSetId = project.ProjectSetId,
                 ProjectSet = project.ProjectSet
-                //Lines = project.Lines,
-                //Arcs = null
             };
-            //var project = await _context.ProjectData.FirstOrDefaultAsync(p => p.Id == id);
-
-            /*
-            var projectData = await _context.ProjectData.FindAsync(id);
-
-            if (projectData == null)
-            {
-                return NotFound();
-            }
-
-            return projectData;
-            */
 
             return Ok(customProject);
         }
@@ -325,7 +273,6 @@ namespace vector_control_system_api.Controllers
                 OffsetX = 0,
                 OffsetY = 0,
                 OffsetZ = 0
-                //FileType = fileExtension
             };
 
             using (var target = new MemoryStream())
@@ -401,14 +348,6 @@ namespace vector_control_system_api.Controllers
         [Authorize]
         public async Task<IActionResult> PatchProjectData(int id, [FromForm] ProjectDataModel model)
         {
-
-            /*
-            if (id != model.Id)
-            {
-                return BadRequest();
-            }
-            */
-
             var userClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
             if (userClaim == null)
             {
@@ -431,7 +370,6 @@ namespace vector_control_system_api.Controllers
             }
 
             var projectSet = await _context.ProjectSet
-                //.Where(x => x.Id == model.ProjectSetId)
                 .Where(x => x.Id == projectData.ProjectSetId)
                 .FirstOrDefaultAsync();
 
@@ -458,11 +396,8 @@ namespace vector_control_system_api.Controllers
                 }
                 projectData.Original = true;
             }
-            //projectData.Status = model.Status;
-            //projectData.Original = model.Original;
 
             await _context.SaveChangesAsync();
-            //return CreatedAtAction("GetProjectData", new { id = projectData.Id }, projectData);
             return Ok();
         }
     }

@@ -32,7 +32,5 @@ namespace vector_control_system_api.Database
         public int ProjectId { get; set; }
         [JsonIgnore] public ProjectData Project { get; set; }
 
-        //[JsonIgnore] public ICollection<Match> OriginalMatches { get; set; }
-        //[JsonIgnore] public ICollection<Match> TestMatches { get; set; }
     }
 }

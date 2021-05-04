@@ -37,7 +37,6 @@ namespace vector_control_system_api.Controllers
                 .Where(x => x.Correct && x.ProjectId == id)
                 .ToList();
             return Ok(lines);
-            //return await _context.Line.ToListAsync();
         }
 
         // GET: api/Line/LinesIncorrect
@@ -48,7 +47,6 @@ namespace vector_control_system_api.Controllers
                 .Where(x => !x.Correct && x.ProjectId == id)
                 .ToList();
             return Ok(lines);
-            //return await _context.Line.ToListAsync();
         }
 
         // GET: api/Line/LinesMissing
@@ -73,21 +71,7 @@ namespace vector_control_system_api.Controllers
             var linesTest = _context.Line
                 .Where(x => x.ProjectId == id)
                 .ToList();
-            /*
-            var items = (from x in linesOriginal
-                         join y in linesTest
-                         on new
-                         { x.DX, x.DY, x.DZ, x.Magnitude }
-                         equals new
-                         { y.DX, y.DY, y.DZ, y.Magnitude }
-                         select x)
-                .ToList();
-            
-            var items2 = linesOriginal
-                .Where(x => linesTest
-                .All(y => y.DX != x.DX && y.DY != x.DY && y.DZ != x.DZ && y.Magnitude != x.Magnitude))
-                .ToList();
-            */
+
             List<Line> items = new List<Line>();
 
             foreach (var originalLine in linesOriginal)
@@ -117,9 +101,8 @@ namespace vector_control_system_api.Controllers
                 }
             }
             var items2 = linesOriginal.Where(x => !items.Any(y => y.Handle == x.Handle)).ToList();
-            
-                        return Ok(items2);
-            //return await _context.Line.ToListAsync();
+
+            return Ok(items2);
         }
 
         // GET: api/Line/LinesHandle
@@ -135,7 +118,6 @@ namespace vector_control_system_api.Controllers
             if (projects == null) return Ok();
 
             List<Line> lines = _context.Line.Where(x => x.ProjectId == projectData.Id).ToList();
-            //List<Arc> arcs = _context.Arc.Where(x => x.ProjectId == projectData.Id).ToList();
 
             List<Line> matchingLines = new List<Line>();
 
@@ -249,7 +231,6 @@ namespace vector_control_system_api.Controllers
             await _context.SaveChangesAsync();
 
             return Ok();
-            //return CreatedAtAction("GetLine", new { id = line.Id }, line);
         }
 
         // DELETE: api/Line/5

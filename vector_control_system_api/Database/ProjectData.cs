@@ -41,8 +41,7 @@ namespace vector_control_system_api.Database
         public double OffsetX { get; set; }
         public double OffsetY { get; set; }
         public double OffsetZ { get; set; }
-        //[JsonIgnore] public ICollection<Match> OriginalMatches { get; set; }
-        //[JsonIgnore] public ICollection<Match> TestMatches { get; set; }
+
 
     }
 }
