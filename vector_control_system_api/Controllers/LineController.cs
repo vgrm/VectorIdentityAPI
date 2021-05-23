@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Line
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Line>>> GetLines()
         {
 
@@ -31,6 +33,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Line/LinesMatch
         [HttpGet("LinesMatch")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Line>>> GetLinesMatch(int id)
         {
             var lines = _context.Line
@@ -41,6 +44,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Line/LinesIncorrect
         [HttpGet("LinesIncorrect")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Line>>> GetLinesIncorrect(int id)
         {
             var lines = _context.Line
@@ -51,6 +55,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Line/LinesMissing
         [HttpGet("LinesMissing")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Line>>> GetLinesMissing(int id)
         {
             const double min = -0.00000000000019;
@@ -107,6 +112,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Line/LinesHandle
         [HttpGet("LinesHandle")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Line>>> GetLinesHandle(int id)
         {
             var projectData = _context.ProjectData
@@ -170,6 +176,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Line/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Line>> GetLine(int id)
         {
             var line = await _context.Line.FindAsync(id);
@@ -185,6 +192,7 @@ namespace vector_control_system_api.Controllers
         // PUT: api/Line/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutLine(int id, Line line)
         {
             if (id != line.Id)
@@ -216,6 +224,7 @@ namespace vector_control_system_api.Controllers
         // POST: api/Line
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Line>> PostLine(Line line)
         {
             //check for nulls
@@ -235,6 +244,7 @@ namespace vector_control_system_api.Controllers
 
         // DELETE: api/Line/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteLine(int id)
         {
             var line = await _context.Line.FindAsync(id);

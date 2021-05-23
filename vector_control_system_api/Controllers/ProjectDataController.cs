@@ -49,7 +49,7 @@ namespace vector_control_system_api.Controllers
                         Id = project.Id,
                         Name = project.Name,
                         FileType = project.FileType,
-                        FileData = project.FileData,
+                        FileData = null,
                         DateCreated = project.DateCreated,
 
                         Status = project.Status,
@@ -101,7 +101,7 @@ namespace vector_control_system_api.Controllers
                     Id = project.Id,
                     Name = project.Name,
                     FileType = project.FileType,
-                    FileData = project.FileData,
+                    FileData = null,
                     DateCreated = project.DateCreated,
 
                     Status = project.Status,
@@ -144,7 +144,7 @@ namespace vector_control_system_api.Controllers
 
                 Name = project.Name,
                 FileType = project.FileType,
-                FileData = project.FileData,
+                FileData = null,
                 DateCreated = project.DateCreated,
 
                 Status = project.Status,
@@ -168,14 +168,16 @@ namespace vector_control_system_api.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutProjectData(int id, ProjectData projectData)
+        public async Task<IActionResult> PutProjectData(int id, ProjectData projectDataRequest)
         {
 
             //check if valid project
-            if (id != projectData.Id)
+            if (id != projectDataRequest.Id)
             {
                 return BadRequest();
             }
+
+            ProjectData projectData = _context.ProjectData.Find(id);
 
             var userClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
             if (userClaim == null)
@@ -205,6 +207,14 @@ namespace vector_control_system_api.Controllers
                 return BadRequest();
             }
 
+            var originalProject = await _context.ProjectData
+                .Where(x => x.ProjectSetId == projectData.ProjectSetId && x.Original)
+                .FirstOrDefaultAsync();
+
+            if (originalProject == null)
+            {
+                return BadRequest();
+            }
             //update project entries
             if (projectData.Status == "New")
             {
@@ -268,6 +278,7 @@ namespace vector_control_system_api.Controllers
                 DateUploaded = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
                 OwnerId = user.Id,
+                Owner = user,
                 StateId = -1,
                 ProjectSetId = projectDataModel.ProjectSetId,
                 OffsetX = 0,
@@ -288,7 +299,34 @@ namespace vector_control_system_api.Controllers
 
             _context.ProjectData.Add(projectData);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetProjectData", new { id = projectData.Id }, projectData);
+
+
+            var customProject = new ProjectDataResponseModel
+            {
+                Id = projectData.Id,
+
+                Name = projectData.Name,
+                FileType = projectData.FileType,
+                FileData = null,
+                DateCreated = projectData.DateCreated,
+
+                Status = projectData.Status,
+                Original = projectData.Original,
+                ScoreIdentity = projectData.ScoreIdentity,
+                ScoreCorrectness = projectData.ScoreCorrectness,
+
+                DateUploaded = projectData.DateUploaded,
+                DateUpdated = projectData.DateUpdated,
+
+                OwnerId = projectData.OwnerId,
+                Owner = projectData.Owner,
+                ProjectSetId = projectData.ProjectSetId,
+                ProjectSet = projectData.ProjectSet
+            };
+
+
+            //return CreatedAtAction(nameof(GetProjectData), new { id = createdProjectData.Entity.Id}, createdProjectData);
+            return CreatedAtAction("GetProjectData", new { id = customProject.Id }, customProject);
         }
 
         // DELETE: api/ProjectData/5

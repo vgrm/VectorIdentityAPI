@@ -115,14 +115,16 @@ namespace vector_control_system_api.Services.Authentification
             {
                 throw new ArgumentException();
             }
-
+            /*
             var secret = _configuration["JWTSecret"];
             if (secret == null)
             {
                 throw new ConfigurationMissingException();
             }
+            */
+            var secretLocal = "vanGOATyNUyvGbnHs7ke2NCq8zQzNLW7mPmHvGRM";
+            var key = Encoding.ASCII.GetBytes(secretLocal);
 
-            var key = Encoding.ASCII.GetBytes(secret);
             var symmetricSecurityKey = new SymmetricSecurityKey(key);
 
             var claims = CreateClaims(user);

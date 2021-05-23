@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Layer
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Layer>>> GetLayer()
         {
             return await _context.Layer.ToListAsync();
@@ -29,6 +31,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Layer/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Layer>> GetLayer(int id)
         {
             var layer = await _context.Layer.FindAsync(id);
@@ -44,6 +47,7 @@ namespace vector_control_system_api.Controllers
         // PUT: api/Layer/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutLayer(int id, Layer layer)
         {
             if (id != layer.Id)
@@ -75,6 +79,7 @@ namespace vector_control_system_api.Controllers
         // POST: api/Layer
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Layer>> PostLayer(Layer layer)
         {
             _context.Layer.Add(layer);
@@ -85,6 +90,7 @@ namespace vector_control_system_api.Controllers
 
         // DELETE: api/Layer/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteLayer(int id)
         {
             var layer = await _context.Layer.FindAsync(id);

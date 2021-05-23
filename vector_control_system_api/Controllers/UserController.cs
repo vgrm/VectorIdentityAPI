@@ -67,6 +67,7 @@ namespace vector_control_system_api.Controllers
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{username}")]
+        [Authorize]
         public async Task<IActionResult> PutUser(string username, User userData)
         {
             var userClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
@@ -161,6 +162,7 @@ namespace vector_control_system_api.Controllers
         }
 
         [HttpPost("signin")]
+
         public async Task<ActionResult<UserModel>> Signin([FromBody] SigninModel signinModel)
         {
             if (!ModelState.IsValid)
@@ -203,6 +205,7 @@ namespace vector_control_system_api.Controllers
 
         // DELETE: api/User/5
         [HttpDelete("{username}")]
+        [Authorize]
         public async Task<IActionResult> DeleteUser(string username)
         {
 

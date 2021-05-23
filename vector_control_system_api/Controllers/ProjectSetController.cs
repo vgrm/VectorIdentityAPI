@@ -135,7 +135,7 @@ namespace vector_control_system_api.Controllers
         [Authorize]
         public async Task<ActionResult<ProjectSet>> GetProjectSet(int id)
         {
-            /*
+            
             var userClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
             if (userClaim == null)
             {
@@ -145,20 +145,24 @@ namespace vector_control_system_api.Controllers
             int userId = int.Parse(userClaim.Value);
             var user = _context.User.Find(userId);
 
-            //var user =  _context.User.FindAsync(id);
-
             if (user == null)
             {
                 return BadRequest();
             }
-            */
+            
             var projectSet = await _context.ProjectSet
                 .Include(x => x.Owner)
                 .Include(x => x.State)
+                //.Where(x => x.OwnerId != user.Id && x.StateId != -3)
                 .Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
 
             if (projectSet == null)
+            {
+                return BadRequest();
+            }
+
+            if (projectSet.StateId == -3 && projectSet.OwnerId != userId)
             {
                 return BadRequest();
             }

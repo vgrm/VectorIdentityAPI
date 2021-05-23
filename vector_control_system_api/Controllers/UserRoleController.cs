@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/UserRole
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<UserRole>>> GetUserRole()
         {
             return await _context.UserRole.ToListAsync();
@@ -29,6 +31,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/UserRole/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<UserRole>> GetUserRole(int id)
         {
             var userRole = await _context.UserRole.FindAsync(id);
@@ -44,6 +47,7 @@ namespace vector_control_system_api.Controllers
         // PUT: api/UserRole/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutUserRole(int id, UserRole userRole)
         {
             if (id != userRole.Id)
@@ -75,6 +79,7 @@ namespace vector_control_system_api.Controllers
         // POST: api/UserRole
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<UserRole>> PostUserRole(UserRole userRole)
         {
             _context.UserRole.Add(userRole);
@@ -85,6 +90,7 @@ namespace vector_control_system_api.Controllers
 
         // DELETE: api/UserRole/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteUserRole(int id)
         {
             var userRole = await _context.UserRole.FindAsync(id);

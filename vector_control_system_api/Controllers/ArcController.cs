@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Arc
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Arc>>> GetArc()
         {
             return await _context.Arc.ToListAsync();
@@ -30,6 +32,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Arc/ArcsMatch
         [HttpGet("ArcsMatch")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Arc>>> GetArcsMatch(int id)
         {
             var arcs = _context.Arc
@@ -40,6 +43,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Arc/ArcsIncorrect
         [HttpGet("ArcsIncorrect")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Arc>>> GetArcsIncorrect(int id)
         {
             var arcs = _context.Arc
@@ -50,6 +54,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Arc/ArcsMissing
         [HttpGet("ArcsMissing")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Arc>>> GetArcsMissing(int id)
         {
             var project = _context.ProjectData
@@ -74,6 +79,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Arc/ArcHandle
         [HttpGet("ArcsHandle")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Arc>>> GetArcsHandle(int id)
         {
             var projectData = _context.ProjectData
@@ -138,6 +144,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/Arc/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Arc>> GetArc(int id)
         {
             var arc = await _context.Arc.FindAsync(id);
@@ -153,6 +160,7 @@ namespace vector_control_system_api.Controllers
         // PUT: api/Arc/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutArc(int id, Arc arc)
         {
             if (id != arc.Id)
@@ -184,6 +192,7 @@ namespace vector_control_system_api.Controllers
         // POST: api/Arc
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Arc>> PostArc(Arc arc)
         {
             _context.Arc.Add(arc);
@@ -194,6 +203,7 @@ namespace vector_control_system_api.Controllers
 
         // DELETE: api/Arc/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteArc(int id)
         {
             var arc = await _context.Arc.FindAsync(id);

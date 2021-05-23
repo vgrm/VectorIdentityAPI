@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/ProjectState
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ProjectState>>> GetProjectState()
         {
             return await _context.ProjectState.ToListAsync();
@@ -29,6 +31,7 @@ namespace vector_control_system_api.Controllers
 
         // GET: api/ProjectState/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<ProjectState>> GetProjectState(int id)
         {
             var projectState = await _context.ProjectState.FindAsync(id);
@@ -44,6 +47,7 @@ namespace vector_control_system_api.Controllers
         // PUT: api/ProjectState/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutProjectState(int id, ProjectState projectState)
         {
             if (id != projectState.Id)
@@ -75,6 +79,7 @@ namespace vector_control_system_api.Controllers
         // POST: api/ProjectState
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<ProjectState>> PostProjectState(ProjectState projectState)
         {
             _context.ProjectState.Add(projectState);
@@ -85,6 +90,7 @@ namespace vector_control_system_api.Controllers
 
         // DELETE: api/ProjectState/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteProjectState(int id)
         {
             var projectState = await _context.ProjectState.FindAsync(id);

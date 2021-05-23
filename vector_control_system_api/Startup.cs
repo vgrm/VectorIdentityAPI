@@ -34,7 +34,8 @@ namespace vector_control_system_api
         public void ConfigureServices(IServiceCollection services)
         {
             var jwtToken = Configuration.GetValue<string>("JWTSecret");
-            var key = Encoding.ASCII.GetBytes(jwtToken);
+            var jwtTokenLocal = "vanGOATyNUyvGbnHs7ke2NCq8zQzNLW7mPmHvGRM";
+            var key = Encoding.ASCII.GetBytes(jwtTokenLocal);
 
             var TokenValidationParameters = new TokenValidationParameters
             {
@@ -98,7 +99,8 @@ namespace vector_control_system_api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //app.UseDeveloperExceptionPage();
-            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod());
+            //app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(options => options.WithOrigins("http://192.168.0.10:880").AllowAnyHeader().AllowAnyMethod());
 
             app.UseRouting();
 
